@@ -132,25 +132,57 @@ class Colaborador {
     }
 
     /**
-     * Asigna un nuevo cargo y desactiva el anterior (Punto 5)
+     * Desactiva el cargo activo actual de un colaborador, estableciendo su fecha de fin.
+     * Esto es crucial para mantener un historial de cargos cuando se produce un cambio de salario o puesto.
+     *
+     * @param int $colaborador_id El ID del colaborador.
+     * @param string $fecha_inicio_nuevo_cargo La fecha en que comienza el nuevo cargo.
+     * @return bool Devuelve true si la operación fue exitosa o si no había cargo que desactivar.
      */
-    public function addCargo(int $colaborador_id, string $nombre_cargo, int $sueldo, string $fecha_inicio): bool {
-        // 1. Desactivar el cargo actual y ponerle fecha de fin
-        $currentCargo = $this->getActiveCargoRow($colaborador_id);
-        if ($currentCargo) {
-            $currentCargo['es_activo'] = 0;
-            $currentCargo['fecha_fin'] = $fecha_inicio;
-            $stmt = $this->db->prepare("UPDATE cargos_historial SET es_activo = 0, fecha_fin = ? WHERE colaborador_id = ? AND es_activo = 1");
-            $stmt->execute([$fecha_inicio, $colaborador_id]);
-            Integrity::refreshRowSignature($this->db, 'cargos_historial', 'id', $currentCargo['id']);
+    public function deactivateCurrentCargo(int $colaborador_id, string $fecha_inicio_nuevo_cargo): bool {
+        // La fecha de fin del cargo anterior es un día antes del inicio del nuevo.
+        $fecha_fin_cargo_anterior = (new \DateTime($fecha_inicio_nuevo_cargo))->modify('-1 day')->format('Y-m-d');
+
+        // Primero, obtenemos el ID del cargo que está activo para poder actualizar su firma de integridad.
+        $findStmt = $this->db->prepare("SELECT id FROM cargos_historial WHERE colaborador_id = ? AND es_activo = 1");
+        $findStmt->execute([$colaborador_id]);
+        $cargo_a_desactivar = $findStmt->fetch();
+
+        // Si no se encuentra un cargo activo, no hay nada que hacer. Se considera un éxito.
+        if (!$cargo_a_desactivar) {
+            return true;
         }
 
-        // 2. Insertar el nuevo cargo como activo
-        $stmt = $this->db->prepare("INSERT INTO cargos_historial (colaborador_id, nombre_cargo, sueldo, fecha_inicio, es_activo) VALUES (?, ?, ?, ?, 1)");
+        $cargo_id = $cargo_a_desactivar['id'];
+
+        // Ahora, actualizamos el cargo para marcarlo como inactivo y establecer su fecha de fin.
+        $updateStmt = $this->db->prepare(
+            "UPDATE cargos_historial 
+             SET es_activo = 0, fecha_fin = ? 
+             WHERE id = ?"
+        );
+        
+        if ($updateStmt->execute([$fecha_fin_cargo_anterior, $cargo_id])) {
+            // Finalmente, refrescamos la firma de integridad de la fila que acabamos de modificar.
+            return \App\Core\Integrity::refreshRowSignature($this->db, 'cargos_historial', 'id', $cargo_id);
+        }
+
+        return false;
+    }
+
+    /**
+     * Añade un nuevo registro de cargo para un colaborador.
+     * Este nuevo cargo se marca como activo por defecto (es_activo = 1).
+     */
+    public function addCargo(int $colaborador_id, string $nombre_cargo, int $sueldo, string $fecha_inicio): bool {
+        $sql = "INSERT INTO cargos_historial (colaborador_id, nombre_cargo, sueldo, fecha_inicio, fecha_fin, es_activo) 
+                VALUES (?, ?, ?, ?, NULL, 1)";
+        
+        $stmt = $this->db->prepare($sql);
+
         if ($stmt->execute([$colaborador_id, $nombre_cargo, $sueldo, $fecha_inicio])) {
-            $newId = (int)$this->db->lastInsertId();
-            Integrity::refreshRowSignature($this->db, 'cargos_historial', 'id', $newId);
-            return true;
+            $id = (int)$this->db->lastInsertId();
+            return \App\Core\Integrity::refreshRowSignature($this->db, 'cargos_historial', 'id', $id);
         }
 
         return false;

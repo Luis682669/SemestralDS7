@@ -33,7 +33,22 @@ class VacacionController {
             // Calculamos automáticamente cuántos días solicitó
             $inicio = new \DateTime($fecha_inicio);
             $fin = new \DateTime($fecha_fin);
-            $dias_disfrutados = $inicio->diff($fin)->days + 1; // +1 para incluir el último día
+            
+            // Nuevo cálculo excluyendo fines de semana (sábados y domingos)
+            $periodo_fin = (clone $fin)->modify('+1 day');
+            $periodo = new \DatePeriod($inicio, new \DateInterval('P1D'), $periodo_fin);
+            $dias_disfrutados = 0;
+            foreach ($periodo as $dia) {
+                if ($dia->format('N') < 6) { // Contar solo de Lunes (1) a Viernes (5)
+                    $dias_disfrutados++;
+                }
+            }
+
+            // Si no se seleccionó ningún día hábil, no se procesa
+            if ($dias_disfrutados <= 0) {
+                header('Location: /vacaciones/crear?error=no_work_days');
+                exit;
+            }
 
             $this->vacacionModel->solicitar($colaborador_id, $fecha_inicio, $fecha_fin, $dias_disfrutados, $motivo);
             

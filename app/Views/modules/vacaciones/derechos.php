@@ -81,7 +81,7 @@
         tbody tr:nth-child(4) { animation-delay: .55s; }
         tbody tr:nth-child(5) { animation-delay: .6s; }
 
-        .dias-num { animation: countUpFade .3s ease; }
+        .dias-num { animation: countUpFade .4s ease; }
 
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: .001s !important; animation-delay: 0s !important; transition-duration: .001s !important; }
@@ -137,51 +137,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>8-123-4567</td>
-                                <td>María Torres</td>
-                                <td>12/03/2022</td>
-                                <td>1206</td>
-                                <td><span class="dias-num">109</span></td>
-                                <td>39</td>
-                                <td><span class="dias-num">3</span></td>
-                            </tr>
-                            <tr>
-                                <td>8-234-5678</td>
-                                <td>Samuel Smith</td>
-                                <td>04/07/2023</td>
-                                <td>729</td>
-                                <td><span class="dias-num">66</span></td>
-                                <td>23</td>
-                                <td><span class="dias-num">2</span></td>
-                            </tr>
-                            <tr>
-                                <td>8-345-6789</td>
-                                <td>Meredith Silva</td>
-                                <td>19/01/2024</td>
-                                <td>530</td>
-                                <td><span class="dias-num">48</span></td>
-                                <td>17</td>
-                                <td><span class="dias-num">1</span></td>
-                            </tr>
-                            <tr>
-                                <td>8-456-7890</td>
-                                <td>Jorge Pérez</td>
-                                <td>22/09/2024</td>
-                                <td>283</td>
-                                <td><span class="dias-num">25</span></td>
-                                <td>9</td>
-                                <td><span class="dias-num">0</span></td>
-                            </tr>
-                            <tr>
-                                <td>8-567-8901</td>
-                                <td>Luisa García</td>
-                                <td>08/05/2025</td>
-                                <td>420</td>
-                                <td><span class="dias-num">38</span></td>
-                                <td>13</td>
-                                <td><span class="dias-num">1</span></td>
-                            </tr>
+                            <?php foreach ($colaboradores as $col): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($col['identificacion']); ?></td>
+                                    <td><?php echo htmlspecialchars($col['primer_nombre'] . ' ' . $col['primer_apellido']); ?></td>
+                                    <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($col['fecha_contratacion']))); ?></td>
+                                    <td><?php echo htmlspecialchars($col['dias_trabajados']); ?></td>
+                                    <td><span class="dias-num"><?php echo htmlspecialchars($col['dias_vacaciones']); ?></span></td>
+                                    <td><?php echo htmlspecialchars($col['meses_trabajados']); ?></td>
+                                    <td><span class="dias-num"><?php echo htmlspecialchars($col['meses_vacaciones']); ?></span></td>
+                                </tr>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>

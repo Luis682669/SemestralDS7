@@ -507,52 +507,48 @@
                             </tr>
                         </thead>
                         <tbody id="tbody">
-                            <tr class="entering" data-id="1">
-                                <td><div class="colaborador-cell"><div class="avatar-sm">M</div>María Torres</div></td>
-                                <td>07/07 → 14/07</td>
-                                <td>6</td>
-                                <td>Vacaciones anuales</td>
-                                <td><span class="dias-disponibles">12</span></td>
-                                <td><span class="status status-pendiente">Pendiente</span></td>
-                                <td>
-                                    <div class="actions">
-                                        <button class="btn btn-aprob" data-accion="Aprobada">Aprobar</button>
-                                        <button class="btn btn-rech" data-accion="Rechazada">Rechazar</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="entering" data-id="2">
-                                <td><div class="colaborador-cell"><div class="avatar-sm">S</div>Samuel Smith</div></td>
-                                <td>15/07 → 17/07</td>
-                                <td>3</td>
-                                <td>Permiso médico</td>
-                                <td><span class="dias-disponibles">8</span></td>
-                                <td><span class="status status-pendiente">Pendiente</span></td>
-                                <td>
-                                    <div class="actions">
-                                        <button class="btn btn-aprob" data-accion="Aprobada">Aprobar</button>
-                                        <button class="btn btn-rech" data-accion="Rechazada">Rechazar</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="entering" data-id="3">
-                                <td><div class="colaborador-cell"><div class="avatar-sm">L</div>Luisa García</div></td>
-                                <td>01/06 → 10/06</td>
-                                <td>8</td>
-                                <td>Vacaciones anuales</td>
-                                <td><span class="dias-disponibles">14</span></td>
-                                <td><span class="status status-aprobada">Aprobada</span></td>
-                                <td><span class="no-actions">—</span></td>
-                            </tr>
-                            <tr class="entering" data-id="4">
-                                <td><div class="colaborador-cell"><div class="avatar-sm">J</div>Jorge Pérez</div></td>
-                                <td>20/05 → 22/05</td>
-                                <td>2</td>
-                                <td>Asunto personal</td>
-                                <td><span class="dias-disponibles">5</span></td>
-                                <td><span class="status status-rechazada">Rechazada</span></td>
-                                <td><span class="no-actions">—</span></td>
-                            </tr>
+                            <?php foreach ($solicitudes as $solicitud): ?>
+                                <tr class="entering" data-id="<?php echo htmlspecialchars($solicitud['id']); ?>">
+                                    <td>
+                                        <div class="colaborador-cell">
+                                            <div class="avatar-sm"><?php echo htmlspecialchars(strtoupper(substr($solicitud['primer_nombre'], 0, 1))); ?></div>
+                                            <?php echo htmlspecialchars($solicitud['primer_nombre'] . ' ' . $solicitud['primer_apellido']); ?>
+                                        </div>
+                                    </td>
+                                    <td><?php echo htmlspecialchars(date('d/m/y', strtotime($solicitud['fecha_inicio'])) . ' → ' . date('d/m/y', strtotime($solicitud['fecha_fin']))); ?></td>
+                                    <td><?php echo htmlspecialchars($solicitud['dias_disfrutados']); ?></td>
+                                    <td><?php echo htmlspecialchars($solicitud['motivo'] ?: '—'); ?></td>
+                                    <td><span class="dias-disponibles"><?php echo htmlspecialchars($solicitud['dias_disponibles']); ?></span></td>
+                                    <td>
+                                        <?php
+                                            $statusClass = 'status-pendiente';
+                                            if ($solicitud['estado'] === 'Aprobada') $statusClass = 'status-aprobada';
+                                            if ($solicitud['estado'] === 'Rechazada') $statusClass = 'status-rechazada';
+                                        ?>
+                                        <span class="status <?php echo $statusClass; ?>"><?php echo htmlspecialchars($solicitud['estado']); ?></span>
+                                    </td>
+                                    <td>
+                                        <?php if ($solicitud['estado'] === 'Pendiente'): ?>
+                                            <div class="actions">
+                                                <form method="POST" action="/vacaciones/estado" style="display:inline;">
+                                                    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                                                    <input type="hidden" name="id" value="<?php echo $solicitud['id']; ?>">
+                                                    <input type="hidden" name="estado" value="Aprobada">
+                                                    <button type="submit" class="btn btn-aprob">Aprobar</button>
+                                                </form>
+                                                <form method="POST" action="/vacaciones/estado" style="display:inline;">
+                                                    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                                                    <input type="hidden" name="id" value="<?php echo $solicitud['id']; ?>">
+                                                    <input type="hidden" name="estado" value="Rechazada">
+                                                    <button type="submit" class="btn btn-rech">Rechazar</button>
+                                                </form>
+                                            </div>
+                                        <?php else: ?>
+                                            <span class="no-actions">—</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
@@ -566,29 +562,17 @@
     </div>
 
     <script>
-        document.querySelectorAll('.btn-aprob, .btn-rech').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                var row = btn.closest('tr');
-                var accion = btn.getAttribute('data-accion');
-                var statusEl = row.querySelector('.status');
-                var actionsEl = row.querySelector('.actions');
+        // El script de simulación ya no es necesario, ya que los formularios se envían directamente.
+        // Podemos usarlo para mostrar un toast de confirmación si el servidor nos redirige con un mensaje.
+        const urlParams = new URLSearchParams(window.location.search);
+        const msg = urlParams.get('msg');
+        const toast = document.getElementById('toast');
 
-                statusEl.className = 'status ' + (accion === 'Aprobada' ? 'status-aprobada' : 'status-rechazada');
-                statusEl.textContent = accion;
-                statusEl.classList.add('updated');
-
-                actionsEl.parentElement.innerHTML = '<span class="no-actions">—</span>';
-
-                var toast = document.getElementById('toast');
-                if (accion === 'Aprobada') {
-                    toast.innerHTML = '<svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Solicitud aprobada';
-                } else {
-                    toast.innerHTML = '<svg class="cross" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg> Solicitud rechazada';
-                }
-                toast.classList.add('show');
-                setTimeout(function () { toast.classList.remove('show'); }, 2400);
-            });
-        });
+        if (msg === 'solicitud_enviada') {
+            toast.innerHTML = '<svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Solicitud enviada';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2600);
+        }
     </script>
 
 </body>

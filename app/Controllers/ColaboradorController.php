@@ -92,7 +92,8 @@ class ColaboradorController {
                 $this->colaboradorModel->addCargo($colaboradorId, $data['ocupacion'], $sueldo, $data['fecha_contratacion']);
                 header('Location: /colaboradores');
             } else {
-                echo "<script>alert('Error al guardar el colaborador.'); window.history.back();</script>";
+                // Redirigir con un mensaje de error en lugar de un alert
+                header('Location: /colaboradores/crear?error=guardado');
             }
         }
     }
@@ -108,6 +109,19 @@ class ColaboradorController {
 
         $cargos = $this->colaboradorModel->getCargos((int)$id);
         $csrf_token = Security::generateCSRFToken();
+
+        // Preparamos los datos para la gráfica de evolución salarial
+        $chart_labels = [];
+        $chart_salaries = [];
+        // El historial viene en orden descendente, lo invertimos para la gráfica
+        $reversed_cargos = array_reverse($cargos); 
+        foreach ($reversed_cargos as $cargo) {
+            // Formateamos la fecha para que sea legible en el eje X
+            $chart_labels[] = (new \DateTime($cargo['fecha_inicio']))->format('M Y');
+            $chart_salaries[] = $cargo['sueldo'];
+        }
+        // Convertimos los datos a formato JSON para pasarlos a JavaScript
+        $chart_data_json = json_encode(['labels' => $chart_labels, 'salaries' => $chart_salaries]);
         
         require_once BASE_PATH . '/app/Views/modules/colaboradores/show.php';
     }
@@ -122,6 +136,10 @@ class ColaboradorController {
             $sueldo = (int)round((float)$_POST['sueldo']); 
             $fecha_inicio = $_POST['fecha_inicio'];
 
+            // Lógica para desactivar el cargo anterior y activar el nuevo
+            // 1. Desactivamos el cargo activo actual, estableciendo su fecha de fin.
+            $this->colaboradorModel->deactivateCurrentCargo($colaborador_id, $fecha_inicio);
+            // 2. Añadimos el nuevo cargo, que quedará como el único activo.
             $this->colaboradorModel->addCargo($colaborador_id, $nombre_cargo, $sueldo, $fecha_inicio);
             
             header("Location: /colaboradores/perfil?id=" . $colaborador_id);

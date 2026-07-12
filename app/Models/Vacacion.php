@@ -87,4 +87,12 @@ class Vacacion {
         $stmt->execute([$id]);
         return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
+
+    /**
+     * Cuenta las solicitudes de vacaciones pendientes.
+     */
+    public function countPendingRequests(): int {
+        $stmt = $this->db->query("SELECT COUNT(*) FROM vacaciones WHERE estado = 'Pendiente'");
+        return (int) $stmt->fetchColumn();
+    }
 }

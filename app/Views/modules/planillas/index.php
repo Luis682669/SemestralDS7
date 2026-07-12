@@ -152,23 +152,24 @@
 
     <div class="main-wrap">
         <main class="main-container">
-            <div class="page-header">
+            <div class="page-title">
+                <p class="eyebrow">Gestión Financiera</p>
                 <div>
                     <h1>Planilla y Deducciones</h1>
                     <p>Genera pagos mensuales, calcula deducciones obligatorias y revisa el historial de planillas con el mismo diseño del resto de la app.</p>
                 </div>
             </div>
 
-            <?php if(isset($_GET['msg'])): ?>
-                <?php if($_GET['msg'] === 'exito'): ?>
+            <?php if(isset($_GET['msg']) && $_GET['msg'] === 'exito'): ?>
                     <div class="alert-success">✅ Planilla generada y calculada correctamente.</div>
-                <?php elseif($_GET['msg'] === 'error_salario'): ?>
+            <?php elseif(isset($_GET['msg']) && $_GET['msg'] === 'error_salario'): ?>
                     <div class="alert-danger">❌ Error: El colaborador seleccionado no tiene un salario activo asignado.</div>
-                <?php endif; ?>
             <?php endif; ?>
 
             <div class="card">
-                <h2 class="card-title">Generar Pago Mensual</h2>
+                <div class="card-header">
+                    <h2>Generar Pago Mensual</h2>
+                </div>
                 <form action="/planillas/generar" method="POST" class="form-grid">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
 
@@ -243,7 +244,7 @@
                                 </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
-                                <tr><td colspan="8" class="empty-row">No hay pagos procesados en el sistema.</td></tr>
+                                <tr><td colspan="8" class="empty-row">Aún no hay pagos procesados en el sistema.</td></tr>
                             <?php endif; ?>
                         </tbody>
                     </table>

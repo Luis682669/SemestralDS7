@@ -483,8 +483,8 @@
             </div>
 
             <div class="form-card">
-                <form id="demo-form">
-                    <input type="hidden" name="csrf_token" value="demo">
+                <form id="demo-form" method="POST" action="/vacaciones/guardar">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
 
                     <div class="form-group">
                         <label for="colaborador_id">Colaborador</label>
@@ -492,7 +492,11 @@
                             <option value="">-- Seleccione colaborador --</option>
                             <option value="1">8-123-4567 - María Torres</option>
                             <option value="2">8-234-5678 - Samuel Smith</option>
-                            <option value="3">8-345-6789 - Meredith Silva</option>
+                            <?php foreach ($colaboradores as $colaborador): ?>
+                                <option value="<?php echo htmlspecialchars($colaborador['id']); ?>">
+                                    <?php echo htmlspecialchars($colaborador['identificacion'] . ' - ' . $colaborador['primer_nombre'] . ' ' . $colaborador['primer_apellido']); ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
 
@@ -547,10 +551,20 @@
         function updateDays() {
             if (inicio.value && fin.value) {
                 var d1 = new Date(inicio.value);
-                var d2 = new Date(fin.value);
-                var diff = Math.round((d2 - d1) / 86400000) + 1;
-                if (diff > 0) {
-                    count.textContent = diff + (diff === 1 ? ' día' : ' días');
+                var d2 = new Date(fin.value + 'T00:00:00'); // Asegurar que se interprete en la zona horaria local
+                
+                let diasHabiles = 0;
+                let fechaActual = new Date(d1.valueOf());
+
+                while (fechaActual <= d2) {
+                    const diaSemana = fechaActual.getDay(); // 0=Domingo, 1=Lunes, ..., 6=Sábado
+                    if (diaSemana !== 0 && diaSemana !== 6) {
+                        diasHabiles++;
+                    }
+                    fechaActual.setDate(fechaActual.getDate() + 1);
+                }
+                if (diasHabiles >= 0) {
+                    count.textContent = diasHabiles + (diasHabiles === 1 ? ' día hábil' : ' días hábiles');
                     count.classList.remove('pop');
                     void count.offsetWidth;
                     count.classList.add('pop');
@@ -565,25 +579,30 @@
         fin.addEventListener('change', updateDays);
 
         document.getElementById('demo-form').addEventListener('submit', function (e) {
-            e.preventDefault();
             var colaborador = document.getElementById('colaborador_id');
             var groups = [colaborador.closest('.form-group'), inicio.closest('.form-group'), fin.closest('.form-group')];
             groups.forEach(function (g) { g.classList.remove('invalid'); });
+            summary.classList.remove('invalid');
 
-            if (!colaborador.value) { colaborador.closest('.form-group').classList.add('invalid'); return; }
-            if (!inicio.value) { inicio.closest('.form-group').classList.add('invalid'); return; }
-            if (!fin.value) { fin.closest('.form-group').classList.add('invalid'); return; }
+            if (!colaborador.value) { e.preventDefault(); colaborador.closest('.form-group').classList.add('invalid'); return; }
+            if (!inicio.value) { e.preventDefault(); inicio.closest('.form-group').classList.add('invalid'); return; }
+            if (!fin.value) { e.preventDefault(); fin.closest('.form-group').classList.add('invalid'); return; }
 
+            var d1 = new Date(inicio.value);
+            var d2 = new Date(fin.value);
+            var diff = Math.round((d2 - d1) / 86400000) + 1;
+            if (diff < 7) {
+                e.preventDefault(); // Detenemos el envío si no es válido
+                summary.classList.add('invalid');
+                count.textContent = 'Mínimo 7 días';
+                return;
+            }
+
+            // Si todas las validaciones pasan, el formulario se enviará normalmente.
+            // Solo mostramos el estado de carga.
             var btn = document.getElementById('demo-submit');
             btn.classList.add('loading');
-            setTimeout(function () {
-                btn.classList.remove('loading');
-                btn.classList.add('success');
-                btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Registrado';
-                var toast = document.getElementById('toast');
-                toast.classList.add('show');
-                setTimeout(function () { toast.classList.remove('show'); }, 2600);
-            }, 850);
+            // El formulario se envía porque no llamamos a e.preventDefault() en el caso de éxito.
         });
     </script>
 

@@ -368,6 +368,36 @@
             border-top: 1px solid var(--border);
         }
 
+        /* --- ANIMACIONES DE ENTRADA --- */
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes rowIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
+
+        .sidebar-item { opacity: 0; animation: slideInLeft .45s ease forwards; }
+        .sidebar-item:nth-child(1) { animation-delay: .05s; }
+        .sidebar-item:nth-child(2) { animation-delay: .1s; }
+        .sidebar-item:nth-child(3) { animation-delay: .15s; }
+        .sidebar-item:nth-child(4) { animation-delay: .2s; }
+        .sidebar-item:nth-child(5) { animation-delay: .25s; }
+        .sidebar-item:nth-child(6) { animation-delay: .3s; }
+
+        .page-title, .header-actions { opacity: 0; animation: fadeSlideUp .5s ease .1s forwards; }
+        .table-container { opacity: 0; animation: fadeSlideUp .5s ease .2s forwards; }
+
+        tbody tr { opacity: 0; animation: rowIn .4s ease forwards; }
+        tbody tr:nth-child(1) { animation-delay: .4s; }
+        tbody tr:nth-child(2) { animation-delay: .45s; }
+        tbody tr:nth-child(3) { animation-delay: .5s; }
+        tbody tr:nth-child(4) { animation-delay: .55s; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .001s !important;
+                animation-delay: 0s !important;
+                transition-duration: .001s !important;
+            }
+        }
+
         @media (max-width: 760px) {
             .sidebar { display: none; }
             .main-container { padding: 24px 18px 44px; }
@@ -478,7 +508,7 @@
                         <tbody>
                             <?php if(!empty($colaboradores)): ?>
                                 <?php foreach ($colaboradores as $c): ?>
-                                <tr>
+                                <tr class="entering">
                                     <td><span class="cedula"><?php echo htmlspecialchars($c['identificacion']); ?></span></td>
                                     <td>
                                         <div class="nombre-cell">

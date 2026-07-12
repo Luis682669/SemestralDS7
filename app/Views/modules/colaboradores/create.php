@@ -334,6 +334,29 @@
             border-top: 1px solid var(--border);
         }
 
+        /* --- ANIMACIONES DE ENTRADA --- */
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+        .sidebar-item { opacity: 0; animation: slideInLeft .45s ease forwards; }
+        .sidebar-item:nth-child(1) { animation-delay: .05s; }
+        .sidebar-item:nth-child(2) { animation-delay: .1s; }
+        .sidebar-item:nth-child(3) { animation-delay: .15s; }
+        .sidebar-item:nth-child(4) { animation-delay: .2s; }
+        .sidebar-item:nth-child(5) { animation-delay: .25s; }
+        .sidebar-item:nth-child(6) { animation-delay: .3s; }
+
+        .page-title { opacity: 0; animation: fadeSlideUp .5s ease .1s forwards; }
+        .form-card { opacity: 0; animation: fadeSlideUp .5s ease .2s forwards; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .001s !important;
+                animation-delay: 0s !important;
+                transition-duration: .001s !important;
+            }
+        }
+
         @media (max-width: 760px) {
             .sidebar { display: none; }
             .main-container { padding: 24px 18px 44px; }

@@ -136,23 +136,37 @@ class Usuario {
         // 2. Encriptar la contraseña (Regla de Seguridad OWASP)
         $hash = Auth::hashPassword($password);
 
-        // 3. Insertar en la base de datos
+        // 3. Generar claves de API únicas para el nuevo usuario
+        $api_key_public = 'pub_' . bin2hex(random_bytes(16)); // Prefijo para identificarla
+        $api_key_private_raw = 'prv_' . bin2hex(random_bytes(32)); // Clave en texto plano (solo para hashear)
+        $api_key_private_hash = password_hash($api_key_private_raw, PASSWORD_DEFAULT); // Guardamos el hash
+
+        // 4. Insertar en la base de datos
         $payload = [
             'username' => $username,
             'password' => $hash,
             'rol_id' => $rol_id,
-            'activo' => 1
+            'activo' => 1,
+            'api_key_public' => $api_key_public,
+            'api_key_private_hash' => $api_key_private_hash
         ];
         $signature = Integrity::signRecord($payload);
 
-        $stmt = $this->db->prepare("INSERT INTO usuarios (username, password, rol_id) VALUES (:username, :password, :rol_id)");
+        $stmt = $this->db->prepare(
+            "INSERT INTO usuarios (username, password, rol_id, api_key_public, api_key_private_hash) 
+             VALUES (:username, :password, :rol_id, :api_key_public, :api_key_private_hash)"
+        );
+
         if ($stmt->execute([
             'username' => $username,
             'password' => $hash,
-            'rol_id' => $rol_id
+            'rol_id' => $rol_id,
+            'api_key_public' => $api_key_public,
+            'api_key_private_hash' => $api_key_private_hash
         ])) {
             $id = (int)$this->db->lastInsertId();
             Integrity::refreshRowSignature($this->db, 'usuarios', 'id', $id);
+            // En una aplicación real, aquí devolveríamos la clave privada para mostrarla al usuario UNA SOLA VEZ.
             return true;
         }
 
@@ -199,5 +213,14 @@ class Usuario {
         }
 
         return false; // Credenciales incorrectas
+    }
+
+    /**
+     * Busca un usuario por su API Key pública.
+     */
+    public function findByPublicKey(string $publicKey) {
+        $stmt = $this->db->prepare("SELECT * FROM usuarios WHERE api_key_public = :publicKey AND activo = 1 LIMIT 1");
+        $stmt->execute(['publicKey' => $publicKey]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 }
