@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colaboradores - Capital Humano</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy:      #101A3D;
+            --navy-2:    #16224D;
+            --bg:        #F3F5FB;
+            --card:      #FFFFFF;
+            --border:    #E6E9F2;
+            --accent:    #3B5BFF;
+            --accent2:   #6C63FF;
+            --teal:      #0EBAC5;
+            --amber:     #F2A93B;
+            --text:      #131A2C;
+            --muted:     #8891A6;
+            --danger:    #E5484D;
+            --green:     #1FA971;
+        }
+
+        html, body { height: 100%; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 232px;
+            flex-shrink: 0;
+            background: var(--navy);
+            display: flex;
+            flex-direction: column;
+            padding: 22px 14px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 10px 26px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.02rem;
+            color: #fff;
+            letter-spacing: -.3px;
+        }
+
+        .sidebar-brand .dot {
+            width: 9px; height: 9px;
+            border-radius: 50%;
+            background: var(--teal);
+            box-shadow: 0 0 10px var(--teal);
+            flex-shrink: 0;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 12px;
+            border-radius: 10px;
+            color: rgba(255,255,255,0.56);
+            font-size: .85rem;
+            font-weight: 500;
+            transition: background .15s, color .15s;
+        }
+
+        .sidebar-link svg { flex-shrink: 0; opacity: .85; }
+
+        .sidebar-link:hover { color: #fff; background: rgba(255,255,255,0.06); }
+
+        .sidebar-item.active .sidebar-link {
+            color: #fff;
+            background: linear-gradient(90deg, rgba(59,91,255,0.35), rgba(59,91,255,0.05));
+            box-shadow: inset 2px 0 0 var(--accent);
+        }
+
+        .sidebar-foot {
+            margin-top: auto;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 16px;
+        }
+
+        .sidebar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px 14px;
+        }
+
+        .sidebar-avatar {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: .8rem;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .sidebar-user .who { display: flex; flex-direction: column; overflow: hidden; }
+        .sidebar-user .who b { font-size: .82rem; color: #fff; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-user .who span { font-size: .7rem; color: rgba(255,255,255,0.45); }
+
+        .btn-logout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 10px;
+            background: rgba(229,72,77,0.14);
+            color: #FF8589;
+            border: 1px solid rgba(229,72,77,0.3);
+            border-radius: 10px;
+            font-size: .8rem;
+            font-weight: 600;
+            transition: background .15s, color .15s;
+        }
+        .btn-logout:hover { background: var(--danger); color: #fff; }
+
+        /* ── MAIN ── */
+        .main-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+        .main-container {
+            flex: 1;
+            padding: 34px 40px 56px;
+            max-width: 1240px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .page-title { margin-bottom: 26px; }
+
+        .page-title p.eyebrow {
+            font-size: .7rem;
+            font-weight: 600;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 6px;
+        }
+
+        .page-title h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -.4px;
+        }
+
+        /* ── HEADER ACTIONS ── */
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+            flex-grow: 1;
+            max-width: 460px;
+        }
+
+        .search-input-wrap {
+            position: relative;
+            flex-grow: 1;
+        }
+
+        .search-input-wrap svg {
+            position: absolute;
+            left: 13px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 11px 14px 11px 38px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: .85rem;
+            background: var(--card);
+            color: var(--text);
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,91,255,0.12); }
+
+        .btn-secondary {
+            background: var(--card);
+            color: var(--text);
+            padding: 11px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: .84rem;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: border-color .15s, background .15s;
+            white-space: nowrap;
+        }
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+        .btn-light {
+            background: transparent;
+            color: var(--muted);
+            padding: 11px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: .84rem;
+            white-space: nowrap;
+        }
+        .btn-light:hover { color: var(--text); text-decoration: underline; }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            padding: 11px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: .85rem;
+            border: none;
+            cursor: pointer;
+            transition: background .15s, transform .1s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover { background: #2E4DE0; }
+        .btn-primary:active { transform: scale(.98); }
+
+        /* ── TABLE ── */
+        .table-container {
+            background: var(--card);
+            border-radius: 16px;
+            box-shadow: 0 2px 14px rgba(16,26,61,0.04);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .table-wrap { overflow-x: auto; }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 760px; }
+
+        th {
+            padding: 14px 20px;
+            background: #FAFBFD;
+            font-weight: 700;
+            color: var(--muted);
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            font-size: .86rem;
+            color: var(--text);
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: rgba(59,91,255,0.03); }
+
+        .nombre-cell { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+
+        .avatar-sm {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: .7rem;
+            color: #fff;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .avatar-sm img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .cedula { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--text); }
+
+        .badge-active {
+            background: rgba(31,169,113,0.14);
+            color: var(--green);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: .7rem;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .doc-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+        .pdf-link {
+            color: var(--accent);
+            font-weight: 600;
+            font-size: .82rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .pdf-link:hover { text-decoration: underline; }
+
+        .btn-perfil {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(59,91,255,0.06);
+            padding: 5px 12px;
+            border-radius: 8px;
+            color: var(--text);
+            font-size: .78rem;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            transition: background .15s, border-color .15s;
+        }
+        .btn-perfil:hover { background: rgba(59,91,255,0.1); border-color: var(--accent); }
+
+        .no-doc { color: var(--muted); font-size: .82rem; }
+
+        .empty-state { text-align: center; padding: 56px 20px; color: var(--muted); font-size: .9rem; }
+
+        footer {
+            text-align: center;
+            padding: 18px;
+            font-size: .73rem;
+            color: var(--muted);
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 760px) {
+            .sidebar { display: none; }
+            .main-container { padding: 24px 18px 44px; }
+            .header-actions { flex-direction: column; align-items: stretch; }
+            .search-form { max-width: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar">
+        <a class="sidebar-brand" href="/home"><span class="dot"></span>Capital Humano</a>
+
+        <ul class="sidebar-nav">
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="/home">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10h14V10"/></svg>
+                    Inicio
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="/usuarios">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/><path d="M19 4.5a3 3 0 0 1 0 6"/></svg>
+                    Usuarios
+                </a>
+            </li>
+            <li class="sidebar-item active">
+                <a class="sidebar-link" href="/colaboradores">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16"/></svg>
+                    Colaboradores
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="/vacaciones">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+                    Vacaciones
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="/reportes">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M8 16v-4M12 16V8M16 16v-6"/></svg>
+                    Reportes
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="/planillas">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M4 10h16M4 15h16M4 20h16"/></svg>
+                    Planillas
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-foot">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar"><?php echo strtoupper(substr($_SESSION['username'] ?? 'U', 0, 1)); ?></div>
+                <div class="who">
+                    <b><?php echo htmlspecialchars($_SESSION['username'] ?? 'Usuario'); ?></b>
+                    <span>Administrador</span>
+                </div>
+            </div>
+            <a href="/logout" class="btn-logout">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+                Salir
+            </a>
+        </div>
+    </aside>
+
+    <!-- ── MAIN ── -->
+    <div class="main-wrap">
+        <main class="main-container">
+
+            <div class="page-title">
+                <p class="eyebrow">Capital Humano</p>
+                <h1>Gestión de Colaboradores</h1>
+            </div>
+
+            <div class="header-actions">
+                <form action="/colaboradores" method="GET" class="search-form">
+                    <div class="search-input-wrap">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                        <input type="text" name="q" class="search-input" placeholder="Buscar por cédula, nombre..." value="<?php echo htmlspecialchars($_GET['q'] ?? ''); ?>">
+                    </div>
+                    <button type="submit" class="btn-secondary">Buscar</button>
+                    <?php if(!empty($_GET['q'])): ?>
+                        <a href="/colaboradores" class="btn-light">Limpiar</a>
+                    <?php endif; ?>
+                </form>
+
+                <a href="/colaboradores/crear" class="btn-primary">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                    Registrar Colaborador
+                </a>
+            </div>
+
+            <div class="table-container">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cédula</th>
+                                <th>Nombre Completo</th>
+                                <th>Departamento</th>
+                                <th>Estado</th>
+                                <th>Historial Académico</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if(!empty($colaboradores)): ?>
+                                <?php foreach ($colaboradores as $c): ?>
+                                <tr>
+                                    <td><span class="cedula"><?php echo htmlspecialchars($c['identificacion']); ?></span></td>
+                                    <td>
+                                        <div class="nombre-cell">
+                                            <div class="avatar-sm">
+                                                <?php if (!empty($c['foto_perfil'])): ?>
+                                                    <img src="/uploads/<?php echo htmlspecialchars($c['foto_perfil']); ?>" alt="Foto <?php echo htmlspecialchars($c['primer_nombre']); ?>">
+                                                <?php else: ?>
+                                                    <?php echo strtoupper(substr($c['primer_nombre'], 0, 1)); ?>
+                                                <?php endif; ?>
+                                            </div>
+                                            <?php echo htmlspecialchars($c['primer_nombre'] . ' ' . $c['primer_apellido']); ?>
+                                        </div>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($c['departamento']); ?></td>
+                                    <td><span class="badge-active"><?php echo htmlspecialchars($c['estatus'] ?? 'Activo'); ?></span></td>
+                                    <td>
+                                        <?php if(!empty($c['historial_academico_pdf'])): ?>
+                                            <div class="doc-actions">
+                                                <a href="/uploads/<?php echo htmlspecialchars($c['historial_academico_pdf']); ?>" target="_blank" class="pdf-link">📄 Ver PDF</a>
+                                                <a href="/colaboradores/perfil?id=<?php echo htmlspecialchars($c['id']); ?>" class="btn-perfil">Ver Perfil</a>
+                                            </div>
+                                        <?php else: ?>
+                                            <span class="no-doc">Sin documento</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="5">
+                                        <div class="empty-state">
+                                            <?php echo !empty($_GET['q']) ? 'No se encontraron resultados para tu búsqueda.' : 'No hay colaboradores registrados aún.'; ?>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+
+        <footer>
+            Proyecto UTP &mdash; Jeremías, Juan y Luis &nbsp;·&nbsp; Capital Humano <?php echo date('Y'); ?>
+        </footer>
+    </div>
+
+</body>
+</html>
