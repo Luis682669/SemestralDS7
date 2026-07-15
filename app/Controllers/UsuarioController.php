@@ -4,6 +4,7 @@ namespace App\Controllers;
 use App\Models\Usuario;
 use App\Core\Security;
 use App\Core\Response;
+use App\Core\FlashMessage;
 
 class UsuarioController {
     
@@ -75,22 +76,25 @@ class UsuarioController {
 
             // 3. Validar campos y longitud de contraseña
             if (empty($username) || empty($password) || $rol_id <= 0) {
-                echo "<script>alert('Por favor, completa todos los campos.'); window.history.back();</script>";
+                FlashMessage::set('error', 'Por favor, completa todos los campos requeridos.');
+                header('Location: /usuarios/crear');
                 exit;
             }
 
-                if (!Security::validatePasswordLength($password)) {
-                Response::error('La contraseña debe tener entre 8 y 12 caracteres.', 400);
+            if (!Security::validatePasswordLength($password)) {
+                FlashMessage::set('warning', 'La contraseña debe tener entre 8 y 12 caracteres.');
+                header('Location: /usuarios/crear');
+                exit;
             }
 
             // 4. Intentar guardar
             if ($this->usuarioModel->createUser($username, $password, $rol_id)) {
-                header('Location: /usuarios');
-                exit;
+                FlashMessage::set('success', '¡Usuario agregado exitosamente!');
             } else {
-                echo "<script>alert('Error: El nombre de usuario ya está registrado.'); window.history.back();</script>";
-                exit;
+                FlashMessage::set('error', 'Error: El nombre de usuario ya está registrado. Por favor, elige otro.');
             }
+            header('Location: /usuarios');
+            exit;
         }
     }
     /**

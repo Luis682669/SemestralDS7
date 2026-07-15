@@ -2,7 +2,7 @@
 /**
  * Front Controller - Portero de Seguridad
  * @author Luis Alberto De Los Rios
- * @colaboradores Jeremías Donoso, Juan Segundo
+ * @colaboradores Jeremías Donoso, Juan Segundo, Lionel Cordoba
  * Institución: Universidad Tecnológica de Panamá
  */
 
@@ -20,6 +20,7 @@ require_once BASE_PATH . '/app/Core/Database.php';
 require_once BASE_PATH . '/app/Core/Security.php';
 require_once BASE_PATH . '/app/Core/Response.php';
 require_once BASE_PATH . '/app/Core/Auth.php';
+require_once BASE_PATH . '/app/Core/FlashMessage.php';
 require_once BASE_PATH . '/app/Core/Integrity.php';
 require_once BASE_PATH . '/app/Models/Usuario.php';
 require_once BASE_PATH . '/app/Controllers/LoginController.php';
@@ -89,6 +90,9 @@ switch ($uri) {
         break;
     case '/usuarios/guardar':
         $usuarioController->store();
+        break;
+    case '/usuarios/error_existente':
+        $usuarioController->showUserExistsError();
         break;
     case '/usuarios/desactivar':
         $usuarioController->deactivate();

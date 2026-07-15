@@ -2,7 +2,7 @@
 /**
  * Sistema de Gestión de Capital Humano
  * @author Luis Alberto De Los Rios
- * @colaboradores Jeremías Donoso, Juan Segundo
+ * @colaboradores Jeremías Donoso, Juan Segundo, Lionel Cordoba
  * Institución: Universidad Tecnológica de Panamá
  */
 
@@ -136,33 +136,24 @@ class Usuario {
         // 2. Encriptar la contraseña (Regla de Seguridad OWASP)
         $hash = Auth::hashPassword($password);
 
-        // 3. Generar claves de API únicas para el nuevo usuario
-        $api_key_public = 'pub_' . bin2hex(random_bytes(16)); // Prefijo para identificarla
-        $api_key_private_raw = 'prv_' . bin2hex(random_bytes(32)); // Clave en texto plano (solo para hashear)
-        $api_key_private_hash = password_hash($api_key_private_raw, PASSWORD_DEFAULT); // Guardamos el hash
-
-        // 4. Insertar en la base de datos
+        // 3. Insertar en la base de datos
         $payload = [
             'username' => $username,
             'password' => $hash,
             'rol_id' => $rol_id,
-            'activo' => 1,
-            'api_key_public' => $api_key_public,
-            'api_key_private_hash' => $api_key_private_hash
+            'activo' => 1
         ];
         $signature = Integrity::signRecord($payload);
 
         $stmt = $this->db->prepare(
-            "INSERT INTO usuarios (username, password, rol_id, api_key_public, api_key_private_hash) 
-             VALUES (:username, :password, :rol_id, :api_key_public, :api_key_private_hash)"
+            "INSERT INTO usuarios (username, password, rol_id) 
+             VALUES (:username, :password, :rol_id)"
         );
 
         if ($stmt->execute([
             'username' => $username,
             'password' => $hash,
-            'rol_id' => $rol_id,
-            'api_key_public' => $api_key_public,
-            'api_key_private_hash' => $api_key_private_hash
+            'rol_id' => $rol_id
         ])) {
             $id = (int)$this->db->lastInsertId();
             Integrity::refreshRowSignature($this->db, 'usuarios', 'id', $id);

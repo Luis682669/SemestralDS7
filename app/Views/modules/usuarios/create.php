@@ -447,31 +447,33 @@
             </div>
 
             <div class="form-card">
-                <form id="demo-form">
-                    <input type="hidden" name="csrf_token" value="demo">
+                <form id="create-user-form" method="POST" action="/usuarios/guardar">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
 
                     <div class="form-group">
                         <label for="username">Nombre de Usuario (Login)</label>
-                        <input type="text" id="username" name="username" required autocomplete="off">
+                        <input type="text" id="username" name="username" required autocomplete="username">
                     </div>
 
                     <div class="form-group">
                         <label for="password">Contraseña temporal</label>
-                        <input type="password" id="password" name="password" required>
-                        <span class="hint">El usuario deberá cambiarla en su primer inicio de sesión.</span>
+                        <input type="password" id="password" name="password" required autocomplete="new-password">
+                        <span class="hint">Debe tener entre 8 y 12 caracteres.</span>
                     </div>
 
                     <div class="form-group">
                         <label for="rol_id">Nivel de Acceso (Rol)</label>
                         <select id="rol_id" name="rol_id" required>
                             <option value="">Seleccione un rol...</option>
-                            <option value="1">Administrador</option>
-                            <option value="2">Recursos Humanos</option>
-                            <option value="3">Colaborador</option>
+                            <?php if (isset($roles) && is_array($roles)): ?>
+                                <?php foreach ($roles as $rol): ?>
+                                    <option value="<?php echo htmlspecialchars($rol['id']); ?>"><?php echo htmlspecialchars($rol['nombre']); ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </select>
                     </div>
 
-                    <button type="submit" class="btn-submit" id="demo-submit">
+                    <button type="submit" class="btn-submit">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
                         Registrar Usuario
                     </button>
@@ -486,37 +488,7 @@
         </footer>
     </div>
 
-    <script>
-        document.getElementById('demo-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            var username = document.getElementById('username');
-            var rol = document.getElementById('rol_id');
-            var usernameGroup = username.closest('.form-group');
-            var rolGroup = rol.closest('.form-group');
-            usernameGroup.classList.remove('invalid');
-            rolGroup.classList.remove('invalid');
-
-            if (!username.value.trim()) {
-                usernameGroup.classList.add('invalid');
-                return;
-            }
-            if (!rol.value) {
-                rolGroup.classList.add('invalid');
-                return;
-            }
-
-            var btn = document.getElementById('demo-submit');
-            btn.classList.add('loading');
-            setTimeout(function () {
-                btn.classList.remove('loading');
-                btn.classList.add('success');
-                btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Registrado';
-                var toast = document.getElementById('toast');
-                toast.classList.add('show');
-                setTimeout(function () { toast.classList.remove('show'); }, 2600);
-            }, 850);
-        });
-    </script>
+    <!-- Se elimina el script de demostración para usar el envío real del formulario -->
 
 </body>
 </html>

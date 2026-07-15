@@ -438,6 +438,13 @@
                 <h1>Gestión de Usuarios</h1>
             </div>
 
+            <?php
+                // Mostramos mensajes de éxito, error o advertencia
+                \App\Core\FlashMessage::display('success');
+                \App\Core\FlashMessage::display('error');
+                \App\Core\FlashMessage::display('warning');
+            ?>
+
             <div class="header-actions">
                 <p>Administra los accesos y roles de seguridad del sistema.</p>
                 <a href="/usuarios/crear" class="btn-primary">
@@ -460,57 +467,44 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td><span class="id-cell">#1</span></td>
-                                <td><div class="user-cell"><div class="avatar-sm">A</div>admin</div></td>
-                                <td>Administrador</td>
-                                <td><span class="badge badge-active">Activo</span></td>
-                                <td>03/01/2026</td>
-                                <td><span class="protegido">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5.2 3.4 9 8 11 4.6-2 8-5.8 8-11V5l-8-3Z"/></svg>
-                                    Protegido
-                                </span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="id-cell">#2</span></td>
-                                <td><div class="user-cell"><div class="avatar-sm">M</div>msilva</div></td>
-                                <td>Recursos Humanos</td>
-                                <td><span class="badge badge-active">Activo</span></td>
-                                <td>14/02/2026</td>
-                                <td><button type="button" class="btn-action btn-disable">Desactivar</button></td>
-                            </tr>
-                            <tr>
-                                <td><span class="id-cell">#3</span></td>
-                                <td><div class="user-cell"><div class="avatar-sm">S</div>ssmith</div></td>
-                                <td>Colaborador</td>
-                                <td><span class="badge badge-active">Activo</span></td>
-                                <td>02/03/2026</td>
-                                <td><button type="button" class="btn-action btn-disable">Desactivar</button></td>
-                            </tr>
-                            <tr>
-                                <td><span class="id-cell">#4</span></td>
-                                <td><div class="user-cell"><div class="avatar-sm">T</div>mtorres</div></td>
-                                <td>Recursos Humanos</td>
-                                <td><span class="badge badge-inactive">Inactivo</span></td>
-                                <td>18/03/2026</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td><span class="id-cell">#5</span></td>
-                                <td><div class="user-cell"><div class="avatar-sm">J</div>jperez</div></td>
-                                <td>Colaborador</td>
-                                <td><span class="badge badge-active">Activo</span></td>
-                                <td>05/04/2026</td>
-                                <td><button type="button" class="btn-action btn-disable">Desactivar</button></td>
-                            </tr>
-                            <tr>
-                                <td><span class="id-cell">#6</span></td>
-                                <td><div class="user-cell"><div class="avatar-sm">L</div>lgarcia</div></td>
-                                <td>Administrador</td>
-                                <td><span class="badge badge-active">Activo</span></td>
-                                <td>21/05/2026</td>
-                                <td><button type="button" class="btn-action btn-disable">Desactivar</button></td>
-                            </tr>
+                            <?php if (isset($usuarios) && !empty($usuarios)): ?>
+                                <?php foreach ($usuarios as $usuario): ?>
+                                    <tr>
+                                        <td><span class="id-cell">#<?php echo htmlspecialchars($usuario['id']); ?></span></td>
+                                        <td>
+                                            <div class="user-cell">
+                                                <div class="avatar-sm"><?php echo strtoupper(substr($usuario['username'], 0, 1)); ?></div>
+                                                <?php echo htmlspecialchars($usuario['username']); ?>
+                                            </div>
+                                        </td>
+                                        <td><?php echo htmlspecialchars($usuario['rol_nombre']); ?></td>
+                                        <td>
+                                            <?php if ($usuario['activo']): ?>
+                                                <span class="badge badge-active">Activo</span>
+                                            <?php else: ?>
+                                                <span class="badge badge-inactive">Inactivo</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($usuario['creado_en']))); ?></td>
+                                        <td>
+                                            <?php if ($usuario['username'] !== 'admin' && $usuario['activo']): ?>
+                                                <form method="POST" action="/usuarios/desactivar" style="display:inline;">
+                                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                                                    <input type="hidden" name="id" value="<?php echo htmlspecialchars($usuario['id']); ?>">
+                                                    <button type="submit" class="btn-action btn-disable">Desactivar</button>
+                                                </form>
+                                            <?php elseif ($usuario['username'] === 'admin'): ?>
+                                                <span class="protegido">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5.2 3.4 9 8 11 4.6-2 8-5.8 8-11V5l-8-3Z"/></svg>
+                                                    Protegido
+                                                </span>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr><td colspan="6" style="text-align:center; padding: 24px; color: var(--muted);">No hay usuarios registrados.</td></tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>

@@ -152,7 +152,7 @@
             </div>
         </main>
         <footer>
-            Proyecto UTP &mdash; Jeremías, Juan y Luis &nbsp;·&nbsp; Capital Humano <?php echo date('Y'); ?>
+            Proyecto UTP &mdash; Jeremías, Juan, Luis y Lionel &nbsp;·&nbsp; Capital Humano <?php echo date('Y'); ?>
         </footer>
     </div>
 
