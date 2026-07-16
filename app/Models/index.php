@@ -152,7 +152,7 @@
             </div>
         </main>
         <footer>
-            Proyecto UTP &mdash; Jeremías, Juan, Luis y Lionel &nbsp;·&nbsp; Capital Humano <?php echo date('Y'); ?>
+            &copy; <?php echo date('Y'); ?> Proyecto Semestral Capital Humano &mdash; Luis De Los Rios, Jeremías Donoso, Lionel Cordoba y Juan Segundo.
         </footer>
     </div>
 

@@ -198,10 +198,11 @@
             <button type="submit" class="btn-submit">Ingresar</button>
         </form>
 
-        <div class="footer-text">
-            Proyecto UTP &mdash; Jeremías, Juan y Luis
-        </div>
     </div>
+
+    <footer style="text-align: center; padding: 24px; font-size: .8rem; color: rgba(200,210,230,0.6); position: absolute; bottom: 0; width: 100%;">
+        &copy; <?php echo date('Y'); ?> Proyecto Semestral Capital Humano &mdash; Luis De Los Rios, Jeremías Donoso, Lionel Cordoba y Juan Segundo.
+    </footer>
 
     <script>
         function togglePw() {

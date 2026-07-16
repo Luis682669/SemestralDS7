@@ -1,11 +1,11 @@
 <?php
 /**
- * Sistema de Gestión de Capital Humano
- * @author Luis Alberto De Los Rios
- * @colaboradores Jeremías Donoso, Juan Segundo, Lionel Cordoba
- * Institución: Universidad Tecnológica de Panamá
+ * Copyright (c) 2026.
+ * Proyecto Semestral Capital Humano
+ * Universidad Tecnológica de Panamá
+ * Autores: Luis De Los Rios, Jeremías Donoso, Lionel Cordoba, Juan Segundo
  */
-
+ 
 namespace App\Models;
 
 use PDO;

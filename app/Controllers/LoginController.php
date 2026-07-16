@@ -1,4 +1,10 @@
 <?php
+/**
+ * Copyright (c) 2026.
+ * Proyecto Semestral Capital Humano
+ * Universidad Tecnológica de Panamá
+ * Autores: Luis De Los Rios, Jeremías Donoso, Lionel Cordoba, Juan Segundo
+ */
 namespace App\Controllers;
 
 use App\Core\Security;
