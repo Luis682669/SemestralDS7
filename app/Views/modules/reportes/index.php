@@ -190,7 +190,9 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            transition: transform .2s ease, box-shadow .2s ease;
         }
+        .report-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(16,26,61,0.09); }
 
         .stats-section {
             margin-top: 32px;
@@ -228,6 +230,26 @@
         .stat-card li {
             margin-bottom: 10px;
             font-size: .92rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .stat-bar-wrap {
+            flex: 1;
+            height: 6px;
+            background: #EEF1F8;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0 10px;
+        }
+        .stat-bar {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--accent2), var(--accent));
+            width: 0;
+            transition: width 1s cubic-bezier(.22,1,.36,1);
         }
 
         .table-section {
@@ -287,6 +309,9 @@
             color: var(--text);
         }
 
+        tbody tr { transition: background .15s; }
+        tbody tr:hover { background: rgba(59,91,255,0.03); }
+
         .pagination {
             display: flex;
             flex-wrap: wrap;
@@ -305,18 +330,23 @@
             color: var(--text);
             text-decoration: none;
             font-weight: 700;
+            transition: background .15s, color .15s, transform .12s;
         }
 
         .page-link.active,
         .page-link:hover {
             background: var(--accent);
             color: #fff;
+            transform: translateY(-1px);
         }
 
         .report-icon {
             font-size: 2rem;
             margin-bottom: 18px;
+            display: inline-block;
+            transition: transform .2s ease;
         }
+        .report-card:hover .report-icon { transform: scale(1.15) rotate(-4deg); }
 
         .report-title {
             font-family: 'Syne', sans-serif;
@@ -343,7 +373,8 @@
             padding: 12px 18px;
             border-radius: 12px;
             font-weight: 700;
-            transition: background .15s, transform .1s;
+            transition: background .15s, transform .1s, box-shadow .15s;
+            position: relative;
         }
 
         .btn-primary {
@@ -352,7 +383,21 @@
             border: none;
         }
 
-        .btn-primary:hover { background: #2E4DE0; }
+        .btn-primary:hover { background: #2E4DE0; box-shadow: 0 6px 16px rgba(59,91,255,0.28); }
+
+        .btn-primary.loading { color: transparent; pointer-events: none; }
+        .btn-primary.loading::after {
+            content: '';
+            position: absolute;
+            width: 16px; height: 16px;
+            margin: -8px 0 0 -8px;
+            top: 50%; left: 50%;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.35);
+            border-top-color: #fff;
+            animation: spin .6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .btn-secondary {
             background: #f1f5f9;
@@ -361,6 +406,66 @@
         }
 
         .btn-secondary:hover { background: #e2e8f0; }
+
+        .toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-16px);
+            background: var(--text);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: .84rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 28px rgba(16,26,61,0.25);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s ease, transform .25s ease;
+            z-index: 50;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast svg { color: var(--green); flex-shrink: 0; }
+
+        /* ── ANIMACIONES DE ENTRADA ── */
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes rowIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
+
+        .sidebar-item { opacity: 0; animation: slideInLeft .45s ease forwards; }
+        .sidebar-item:nth-child(1) { animation-delay: .05s; }
+        .sidebar-item:nth-child(2) { animation-delay: .1s; }
+        .sidebar-item:nth-child(3) { animation-delay: .15s; }
+        .sidebar-item:nth-child(4) { animation-delay: .2s; }
+        .sidebar-item:nth-child(5) { animation-delay: .25s; }
+        .sidebar-item:nth-child(6) { animation-delay: .3s; }
+
+        .header-actions { opacity: 0; animation: fadeSlideUp .5s ease .1s forwards; }
+
+        .report-card { opacity: 0; animation: fadeSlideUp .5s ease forwards; }
+        .report-card:nth-child(1) { animation-delay: .2s; }
+        .report-card:nth-child(2) { animation-delay: .27s; }
+        .report-card:nth-child(3) { animation-delay: .34s; }
+
+        .stat-card { opacity: 0; animation: fadeSlideUp .5s ease forwards; }
+        .stat-card:nth-child(1) { animation-delay: .42s; }
+        .stat-card:nth-child(2) { animation-delay: .49s; }
+
+        .table-section { opacity: 0; animation: fadeSlideUp .5s ease .55s forwards; }
+
+        tbody tr { opacity: 0; animation: rowIn .35s ease forwards; }
+        tbody tr:nth-child(1) { animation-delay: .7s; }
+        tbody tr:nth-child(2) { animation-delay: .75s; }
+        tbody tr:nth-child(3) { animation-delay: .8s; }
+        tbody tr:nth-child(4) { animation-delay: .85s; }
+        tbody tr:nth-child(5) { animation-delay: .9s; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .001s !important; animation-delay: 0s !important; transition-duration: .001s !important; }
+        }
 
         @media (max-width: 980px) {
             .reports-grid { grid-template-columns: 1fr 1fr; }
@@ -375,6 +480,12 @@
     </style>
 </head>
 <body>
+
+    <!-- Toast de confirmación -->
+    <div class="toast" id="toast">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        PDF generado correctamente
+    </div>
 
     <aside class="sidebar">
         <a class="sidebar-brand" href="/home"><span class="dot"></span>Capital Humano</a>
@@ -402,9 +513,9 @@
 
         <div class="sidebar-foot">
             <div class="sidebar-user">
-                <div class="sidebar-avatar"><?php echo strtoupper(substr($_SESSION['username'] ?? 'U', 0, 1)); ?></div>
+                <div class="sidebar-avatar">A</div>
                 <div class="who">
-                    <b><?php echo htmlspecialchars($_SESSION['username'] ?? 'Usuario'); ?></b>
+                    <b>admin</b>
                     <span>Administrador</span>
                 </div>
             </div>
@@ -426,7 +537,7 @@
                         <h3 class="report-title">Listado de Colaboradores</h3>
                         <p class="report-desc">Genera un PDF con la lista completa de empleados, cédulas y departamentos activos.</p>
                     </div>
-                    <a href="/reportes/listado" class="btn-primary" target="_blank">Generar PDF</a>
+                    <button type="button" class="btn-primary" data-report="Listado de Colaboradores">Generar PDF</button>
                 </div>
 
                 <div class="report-card">
@@ -435,7 +546,7 @@
                         <h3 class="report-title">Estado de Vacaciones</h3>
                         <p class="report-desc">Genera un PDF con todas las solicitudes y su estado actual, incluidos los permisos de vacaciones.</p>
                     </div>
-                    <a href="/reportes/vacaciones" class="btn-primary" target="_blank">Generar PDF</a>
+                    <button type="button" class="btn-primary" data-report="Estado de Vacaciones">Generar PDF</button>
                 </div>
 
                 <div class="report-card">
@@ -453,19 +564,19 @@
                     <div class="stat-card">
                         <h4>Colaboradores por Sexo</h4>
                         <ul>
-                            <?php foreach ($colaboradoresBySexo as $row): ?>
-                                <li><strong><?php echo htmlspecialchars($row['sexo'] === '' ? 'No especificado' : $row['sexo']); ?>:</strong> <?php echo (int)$row['total']; ?></li>
-                            <?php endforeach; ?>
+                            <li><strong>Femenino:</strong> <span class="stat-bar-wrap"><span class="stat-bar" data-value="68"></span></span> 68</li>
+                            <li><strong>Masculino:</strong> <span class="stat-bar-wrap"><span class="stat-bar" data-value="54"></span></span> 54</li>
+                            <li><strong>No especificado:</strong> <span class="stat-bar-wrap"><span class="stat-bar" data-value="2"></span></span> 2</li>
                         </ul>
                     </div>
                     <div class="stat-card">
                         <h4>Colaboradores por Rango de Edad</h4>
                         <ul>
-                            <li><strong>18-24:</strong> <?php echo (int)$colaboradoresByAge['age_18_24']; ?></li>
-                            <li><strong>25-30:</strong> <?php echo (int)$colaboradoresByAge['age_25_30']; ?></li>
-                            <li><strong>31-40:</strong> <?php echo (int)$colaboradoresByAge['age_31_40']; ?></li>
-                            <li><strong>41-50:</strong> <?php echo (int)$colaboradoresByAge['age_41_50']; ?></li>
-                            <li><strong>51+ :</strong> <?php echo (int)$colaboradoresByAge['age_51_plus']; ?></li>
+                            <li><strong>18-24:</strong> <span class="stat-bar-wrap"><span class="stat-bar" data-value="14"></span></span> 14</li>
+                            <li><strong>25-30:</strong> <span class="stat-bar-wrap"><span class="stat-bar" data-value="38"></span></span> 38</li>
+                            <li><strong>31-40:</strong> <span class="stat-bar-wrap"><span class="stat-bar" data-value="46"></span></span> 46</li>
+                            <li><strong>41-50:</strong> <span class="stat-bar-wrap"><span class="stat-bar" data-value="20"></span></span> 20</li>
+                            <li><strong>51+ :</strong> <span class="stat-bar-wrap"><span class="stat-bar" data-value="6"></span></span> 6</li>
                         </ul>
                     </div>
                 </div>
@@ -474,7 +585,7 @@
             <section class="table-section">
                 <div class="table-header">
                     <h2>Colaboradores Activos</h2>
-                    <p>Mostrando página <?php echo $page; ?> de <?php echo $totalPages; ?>.</p>
+                    <p>Mostrando página 1 de 12.</p>
                 </div>
                 <div class="table-wrap">
                     <table>
@@ -489,35 +600,85 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if (!empty($colaboradores)): ?>
-                                <?php foreach ($colaboradores as $col): ?>
-                                    <?php $edad = $col['fecha_nacimiento'] ? (new DateTime($col['fecha_nacimiento']))->diff(new DateTime())->y : '-'; ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($col['identificacion']); ?></td>
-                                        <td><?php echo htmlspecialchars($col['primer_nombre'] . ' ' . $col['primer_apellido']); ?></td>
-                                        <td><?php echo htmlspecialchars($col['sexo'] ?: 'N/A'); ?></td>
-                                        <td><?php echo is_numeric($edad) ? $edad : '-'; ?></td>
-                                        <td><?php echo htmlspecialchars($col['departamento']); ?></td>
-                                        <td><?php echo htmlspecialchars($col['estatus'] ?? 'Activo'); ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="6">No hay colaboradores activos para mostrar.</td>
-                                </tr>
-                            <?php endif; ?>
+                            <tr>
+                                <td>8-123-4567</td>
+                                <td>María Torres</td>
+                                <td>Femenino</td>
+                                <td>29</td>
+                                <td>Recursos Humanos</td>
+                                <td>Activo</td>
+                            </tr>
+                            <tr>
+                                <td>8-234-5678</td>
+                                <td>Samuel Smith</td>
+                                <td>Masculino</td>
+                                <td>34</td>
+                                <td>Tecnología</td>
+                                <td>Activo</td>
+                            </tr>
+                            <tr>
+                                <td>8-345-6789</td>
+                                <td>Meredith Silva</td>
+                                <td>Femenino</td>
+                                <td>27</td>
+                                <td>Finanzas</td>
+                                <td>Activo</td>
+                            </tr>
+                            <tr>
+                                <td>8-456-7890</td>
+                                <td>Jorge Pérez</td>
+                                <td>Masculino</td>
+                                <td>41</td>
+                                <td>Operaciones</td>
+                                <td>Activo</td>
+                            </tr>
+                            <tr>
+                                <td>8-567-8901</td>
+                                <td>Luisa García</td>
+                                <td>Femenino</td>
+                                <td>25</td>
+                                <td>Tecnología</td>
+                                <td>Activo</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
 
                 <div class="pagination">
-                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                        <a href="/reportes?page=<?php echo $i; ?>" class="page-link<?php echo $i === $page ? ' active' : ''; ?>"><?php echo $i; ?></a>
-                    <?php endfor; ?>
+                    <a href="#" class="page-link active">1</a>
+                    <a href="#" class="page-link">2</a>
+                    <a href="#" class="page-link">3</a>
+                    <a href="#" class="page-link">4</a>
                 </div>
             </section>
         </main>
     </div>
+
+    <script>
+        // Barras de estadísticas animadas al cargar
+        setTimeout(function () {
+            document.querySelectorAll('.stat-bar').forEach(function (bar) {
+                var val = parseInt(bar.getAttribute('data-value'), 10);
+                var max = 70;
+                bar.style.width = Math.min((val / max) * 100, 100) + '%';
+            });
+        }, 500);
+
+        // Simulación de generación de PDF
+        document.querySelectorAll('.btn-primary[data-report]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var nombre = btn.getAttribute('data-report');
+                btn.classList.add('loading');
+                setTimeout(function () {
+                    btn.classList.remove('loading');
+                    var toast = document.getElementById('toast');
+                    toast.lastChild.textContent = ' ' + nombre + ' generado correctamente';
+                    toast.classList.add('show');
+                    setTimeout(function () { toast.classList.remove('show'); }, 2600);
+                }, 900);
+            });
+        });
+    </script>
 
 </body>
 </html>

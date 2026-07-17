@@ -32,6 +32,6 @@ class HomeController {
         // Obtenemos las últimas 5 solicitudes de vacaciones para la tabla de actividad reciente
         $actividadReciente = array_slice($this->vacacionModel->getAll(), 0, 5);
 
-        require_once BASE_PATH . '/app/Views/modules/home/index.php';
+        require_once BASE_PATH . '/app/Views/modules/home.php';
     }
 }

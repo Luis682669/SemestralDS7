@@ -26,6 +26,7 @@ require_once BASE_PATH . '/app/Models/Usuario.php';
 require_once BASE_PATH . '/app/Controllers/LoginController.php';
 require_once BASE_PATH . '/app/Controllers/UsuarioController.php';
 require_once BASE_PATH . '/app/Models/Colaborador.php';
+require_once BASE_PATH . '/app/Controllers/HomeController.php';
 require_once BASE_PATH . '/app/Controllers/ColaboradorController.php';
 require_once BASE_PATH . '/app/Models/Vacacion.php';
 require_once BASE_PATH . '/app/Controllers/VacacionController.php';
@@ -56,6 +57,7 @@ $vacacionModel = new \App\Models\Vacacion($db);
 $vacacionController = new \App\Controllers\VacacionController($vacacionModel, $colaboradorModel);
 $reporteModel = new \App\Models\Reporte($db);
 $reporteController = new \App\Controllers\ReporteController($reporteModel);
+$homeController = new \App\Controllers\HomeController($reporteModel, $vacacionModel);
 $planillaModel = new \App\Models\Planilla($db);
 $planillaController = new \App\Controllers\PlanillaController($planillaModel, $colaboradorModel);
 $apiController = new \App\Controllers\ApiController($colaboradorModel);
@@ -78,13 +80,14 @@ switch ($uri) {
         break;
         
     case '/home':
-        require_once BASE_PATH . '/app/Views/modules/home.php';
+        $homeController->index();
         break;
 
     // --- RUTAS DE USUARIOS ---
     case '/usuarios':
         $usuarioController->index();
         break;
+    case '/usuarios/nuevo':
     case '/usuarios/crear':
         $usuarioController->create();
         break;
@@ -102,6 +105,7 @@ switch ($uri) {
     case '/colaboradores':
         $colaboradorController->index();
         break;
+    case '/colaboradores/nuevo':
     case '/colaboradores/crear':
         $colaboradorController->create();
         break;
@@ -119,6 +123,7 @@ switch ($uri) {
     case '/vacaciones':
         $vacacionController->index();
         break;
+    case '/vacaciones/solicitud':
     case '/vacaciones/crear':
         $vacacionController->create();
         break;

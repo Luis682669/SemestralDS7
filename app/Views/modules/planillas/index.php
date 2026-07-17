@@ -88,29 +88,52 @@
         .main-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; margin-left: 232px; }
         .main-container { flex: 1; padding: 34px 40px 56px; max-width: 1240px; width: 100%; margin: 0 auto; }
 
-        .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 26px; }
-        .page-header h1 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--text); margin-bottom: 8px; }
-        .page-header p { color: var(--muted); max-width: 760px; }
+        .page-title p.eyebrow { font-size: .7rem; font-weight: 600; letter-spacing: 1.4px; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+        .page-title h1 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+        .page-title p { color: var(--muted); max-width: 760px; }
+        .page-title { margin-bottom: 26px; }
 
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 2px 14px rgba(16,26,61,0.04); margin-bottom: 24px; }
         .card-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+        .card-header h2 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
 
         .form-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 0.8fr; gap: 16px; align-items: end; }
         .form-group { margin-bottom: 0; }
         .form-group label { display: block; margin-bottom: 10px; font-weight: 600; font-size: .88rem; color: var(--text); }
-        select, input[type="number"] { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: #FBFCFE; color: var(--text); font-size: .92rem; }
+        select, input[type="number"] { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: #FBFCFE; color: var(--text); font-size: .92rem; transition: border-color .15s, box-shadow .15s; }
         select:focus, input[type="number"]:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(59,91,255,0.12); }
 
-        .btn-submit { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px 18px; border-radius: 12px; border: none; background: var(--accent); color: #fff; font-size: .95rem; font-weight: 700; cursor: pointer; transition: background .15s, transform .1s; }
-        .btn-submit:hover { background: #2E4DE0; }
+        .btn-submit { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px 18px; border-radius: 12px; border: none; background: var(--accent); color: #fff; font-size: .95rem; font-weight: 700; cursor: pointer; transition: background .15s, transform .1s, box-shadow .15s; position: relative; }
+        .btn-submit:hover { background: #2E4DE0; box-shadow: 0 6px 16px rgba(59,91,255,0.28); }
         .btn-submit:active { transform: scale(.98); }
+        .btn-submit.loading { color: transparent; pointer-events: none; }
+        .btn-submit.loading::after {
+            content: '';
+            position: absolute;
+            width: 17px; height: 17px;
+            margin: -8.5px 0 0 -8.5px;
+            top: 50%; left: 50%;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.35);
+            border-top-color: #fff;
+            animation: spin .6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .btn-secondary { display: inline-flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 12px; border: 1px solid rgba(16,26,61,0.08); background: #F6F7FB; color: var(--text); font-weight: 600; transition: background .15s, color .15s; text-decoration: none; }
-        .btn-secondary:hover { background: #E9EDF7; }
+        .btn-secondary { display: inline-flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 12px; border: 1px solid rgba(16,26,61,0.08); background: #F6F7FB; color: var(--text); font-weight: 600; transition: background .15s, color .15s, transform .12s; text-decoration: none; }
+        .btn-secondary:hover { background: #E9EDF7; transform: translateY(-1px); }
 
         .card-heading-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
 
-        .alert-success, .alert-danger { padding: 14px 18px; border-radius: 14px; margin-bottom: 20px; font-size: .95rem; }
+        .alert-success, .alert-danger {
+            padding: 14px 18px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            font-size: .95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         .alert-success { background: #dff3e9; color: #0f5132; border: 1px solid #b7dfca; }
         .alert-danger { background: #fde8ea; color: #842029; border: 1px solid #f5c2c7; }
 
@@ -119,11 +142,75 @@
         th, td { padding: 14px 16px; border-bottom: 1px solid var(--border); }
         th { text-align: left; font-size: .72rem; letter-spacing: .4px; text-transform: uppercase; color: var(--muted); }
         td { font-size: .9rem; color: var(--text); }
+        tbody tr { transition: background .15s; }
+        tbody tr:hover { background: rgba(59,91,255,0.03); }
         .number-col { text-align: right; font-family: 'Inter', monospace; }
         .empty-row td { text-align: center; color: var(--muted); }
 
+        .new-row { position: relative; }
+        .new-row::before {
+            content: 'Nuevo';
+            position: absolute;
+            top: -9px; left: 12px;
+            background: var(--accent);
+            color: #fff;
+            font-size: .6rem;
+            font-weight: 800;
+            letter-spacing: .4px;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 20px;
+            opacity: 0;
+        }
+        .new-row.show-badge::before { animation: badgeIn .4s ease .3s forwards; }
+
+        @keyframes badgeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── ANIMACIONES DE ENTRADA ── */
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes rowIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes alertIn {
+            0%   { opacity: 0; transform: translateY(-8px) scale(.98); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes flashRow {
+            0%   { background: rgba(59,91,255,0.14); }
+            100% { background: transparent; }
+        }
+
+        .sidebar-item { opacity: 0; animation: slideInLeft .45s ease forwards; }
+        .sidebar-item:nth-child(1) { animation-delay: .05s; }
+        .sidebar-item:nth-child(2) { animation-delay: .1s; }
+        .sidebar-item:nth-child(3) { animation-delay: .15s; }
+        .sidebar-item:nth-child(4) { animation-delay: .2s; }
+        .sidebar-item:nth-child(5) { animation-delay: .25s; }
+        .sidebar-item:nth-child(6) { animation-delay: .3s; }
+
+        .page-title { opacity: 0; animation: fadeSlideUp .5s ease .1s forwards; }
+
+        .alert-success, .alert-danger { animation: alertIn .4s ease .15s both; }
+
+        .card:nth-of-type(1) { opacity: 0; animation: fadeSlideUp .5s ease .2s forwards; }
+        .card:nth-of-type(2) { opacity: 0; animation: fadeSlideUp .5s ease .28s forwards; }
+
+        tbody tr { opacity: 0; animation: rowIn .35s ease forwards; }
+        tbody tr:nth-child(1) { animation-delay: .45s; }
+        tbody tr:nth-child(2) { animation-delay: .5s; }
+        tbody tr:nth-child(3) { animation-delay: .55s; }
+        tbody tr:nth-child(4) { animation-delay: .6s; }
+
+        tbody tr.flash { animation: flashRow 1.6s ease; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .001s !important; animation-delay: 0s !important; transition-duration: .001s !important; }
+        }
+
         @media (max-width: 980px) { .form-grid { grid-template-columns: 1fr; } }
-        @media (max-width: 760px) { .sidebar { display: none; } .main-container { padding: 24px 18px 44px; } }
+        @media (max-width: 760px) { .sidebar { display: none; } .main-wrap { margin-left: 0; } .main-container { padding: 24px 18px 44px; } }
     </style>
 </head>
 <body>
@@ -140,9 +227,9 @@
         </ul>
         <div class="sidebar-foot">
             <div class="sidebar-user">
-                <div class="sidebar-avatar"><?php echo strtoupper(substr($_SESSION['username'] ?? 'U', 0, 1)); ?></div>
+                <div class="sidebar-avatar">A</div>
                 <div class="who">
-                    <b><?php echo htmlspecialchars($_SESSION['username'] ?? 'Usuario'); ?></b>
+                    <b>admin</b>
                     <span>Administrador</span>
                 </div>
             </div>
@@ -160,26 +247,22 @@
                 </div>
             </div>
 
-            <?php if(isset($_GET['msg']) && $_GET['msg'] === 'exito'): ?>
-                    <div class="alert-success">✅ Planilla generada y calculada correctamente.</div>
-            <?php elseif(isset($_GET['msg']) && $_GET['msg'] === 'error_salario'): ?>
-                    <div class="alert-danger">❌ Error: El colaborador seleccionado no tiene un salario activo asignado.</div>
-            <?php endif; ?>
+            <div id="alert-zone"></div>
 
             <div class="card">
                 <div class="card-header">
                     <h2>Generar Pago Mensual</h2>
                 </div>
-                <form action="/planillas/generar" method="POST" class="form-grid">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                <form id="demo-form" class="form-grid">
+                    <input type="hidden" name="csrf_token" value="demo">
 
                     <div class="form-group">
                         <label>Colaborador</label>
-                        <select name="colaborador_id" required>
+                        <select name="colaborador_id" id="colaborador_id" required>
                             <option value="">-- Seleccione empleado --</option>
-                            <?php foreach($colaboradores as $c): ?>
-                                <option value="<?php echo $c['id']; ?>"><?php echo htmlspecialchars($c['identificacion'] . ' - ' . $c['primer_nombre'] . ' ' . $c['primer_apellido']); ?></option>
-                            <?php endforeach; ?>
+                            <option value="1">8-123-4567 - María Torres</option>
+                            <option value="2">8-234-5678 - Samuel Smith</option>
+                            <option value="3">8-345-6789 - Meredith Silva</option>
                         </select>
                     </div>
 
@@ -206,13 +289,13 @@
                         <input type="number" name="anio" value="2026" required>
                     </div>
 
-                    <button type="submit" class="btn-submit">Procesar Pago</button>
+                    <button type="submit" class="btn-submit" id="demo-submit">Procesar Pago</button>
                 </form>
             </div>
 
             <div class="card">
                 <div class="card-heading-row">
-                    <h2 class="card-title">Registro de Planillas Procesadas</h2>
+                    <h2 class="card-title" style="margin:0; padding:0; border:none;">Registro de Planillas Procesadas</h2>
                     <a href="/planillas/exportar" class="btn-secondary">Exportar a Excel</a>
                 </div>
                 <div class="table-wrap">
@@ -229,29 +312,92 @@
                                 <th class="number-col" style="color: #137333;">Neto a Pagar</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <?php if(!empty($planillas)): ?>
-                                <?php foreach($planillas as $p): ?>
-                                <tr>
-                                    <td><?php echo str_pad($p['id'], 5, '0', STR_PAD_LEFT); ?></td>
-                                    <td><?php echo htmlspecialchars($p['primer_nombre'] . ' ' . $p['primer_apellido']); ?></td>
-                                    <td><?php echo htmlspecialchars($p['mes'] . ' ' . $p['anio']); ?></td>
-                                    <td class="number-col">$<?php echo number_format($p['salario_base'], 0); ?></td>
-                                    <td class="number-col" style="color: #e04f5f;">$<?php echo number_format($p['css_sipe'], 0); ?></td>
-                                    <td class="number-col" style="color: #e04f5f;">$<?php echo number_format($p['seguro_educativo'], 0); ?></td>
-                                    <td class="number-col" style="color: #1a73e8;">$<?php echo number_format($p['xiii_mes'], 0); ?></td>
-                                    <td class="number-col" style="font-weight: 700; color: #137333;">$<?php echo number_format($p['salario_neto'], 0); ?></td>
-                                </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr><td colspan="8" class="empty-row">Aún no hay pagos procesados en el sistema.</td></tr>
-                            <?php endif; ?>
+                        <tbody id="tbody">
+                            <tr>
+                                <td>00042</td>
+                                <td>María Torres</td>
+                                <td>Mayo 2026</td>
+                                <td class="number-col">$1,200</td>
+                                <td class="number-col" style="color: #e04f5f;">$91</td>
+                                <td class="number-col" style="color: #e04f5f;">$15</td>
+                                <td class="number-col" style="color: #1a73e8;">$100</td>
+                                <td class="number-col" style="font-weight: 700; color: #137333;">$1,194</td>
+                            </tr>
+                            <tr>
+                                <td>00041</td>
+                                <td>Samuel Smith</td>
+                                <td>Mayo 2026</td>
+                                <td class="number-col">$1,450</td>
+                                <td class="number-col" style="color: #e04f5f;">$110</td>
+                                <td class="number-col" style="color: #e04f5f;">$18</td>
+                                <td class="number-col" style="color: #1a73e8;">$121</td>
+                                <td class="number-col" style="font-weight: 700; color: #137333;">$1,443</td>
+                            </tr>
+                            <tr>
+                                <td>00040</td>
+                                <td>Meredith Silva</td>
+                                <td>Abril 2026</td>
+                                <td class="number-col">$1,050</td>
+                                <td class="number-col" style="color: #e04f5f;">$80</td>
+                                <td class="number-col" style="color: #e04f5f;">$13</td>
+                                <td class="number-col" style="color: #1a73e8;">$87</td>
+                                <td class="number-col" style="font-weight: 700; color: #137333;">$1,044</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </main>
     </div>
+
+    <script>
+        var datosColaboradores = {
+            '1': { nombre: 'María Torres', salario: 1200 },
+            '2': { nombre: 'Samuel Smith', salario: 1450 },
+            '3': { nombre: 'Meredith Silva', salario: 1050 }
+        };
+
+        document.getElementById('demo-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var select = document.getElementById('colaborador_id');
+            var alertZone = document.getElementById('alert-zone');
+            var btn = document.getElementById('demo-submit');
+
+            if (!select.value) {
+                alertZone.innerHTML = '<div class="alert-danger">❌ Error: Debes seleccionar un colaborador antes de procesar el pago.</div>';
+                return;
+            }
+
+            btn.classList.add('loading');
+            alertZone.innerHTML = '';
+
+            setTimeout(function () {
+                btn.classList.remove('loading');
+                var datos = datosColaboradores[select.value];
+                var salario = datos.salario;
+                var css = Math.round(salario * 0.0975);
+                var seg = Math.round(salario * 0.0125);
+                var xiii = Math.round(salario / 12);
+                var neto = salario - css - seg;
+
+                alertZone.innerHTML = '<div class="alert-success">✅ Planilla generada y calculada correctamente.</div>';
+
+                var tbody = document.getElementById('tbody');
+                var tr = document.createElement('tr');
+                tr.className = 'new-row show-badge flash';
+                tr.innerHTML =
+                    '<td>00043</td>' +
+                    '<td>' + datos.nombre + '</td>' +
+                    '<td>Junio 2026</td>' +
+                    '<td class="number-col">$' + salario.toLocaleString() + '</td>' +
+                    '<td class="number-col" style="color:#e04f5f;">$' + css + '</td>' +
+                    '<td class="number-col" style="color:#e04f5f;">$' + seg + '</td>' +
+                    '<td class="number-col" style="color:#1a73e8;">$' + xiii + '</td>' +
+                    '<td class="number-col" style="font-weight:700; color:#137333;">$' + neto.toLocaleString() + '</td>';
+                tbody.insertBefore(tr, tbody.firstChild);
+            }, 900);
+        });
+    </script>
 
 </body>
 </html>
