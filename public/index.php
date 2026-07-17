@@ -60,7 +60,7 @@ $reporteController = new \App\Controllers\ReporteController($reporteModel);
 $homeController = new \App\Controllers\HomeController($reporteModel, $vacacionModel);
 $planillaModel = new \App\Models\Planilla($db);
 $planillaController = new \App\Controllers\PlanillaController($planillaModel, $colaboradorModel);
-$apiController = new \App\Controllers\ApiController($colaboradorModel);
+$apiController = new \App\Controllers\ApiController($colaboradorModel, $usuarioModel);
 
 // 6. Control de Acceso
 if (!isset($_SESSION['user_id']) && $uri !== '/login' && $uri !== '/' && $uri !== '/reset' && strpos($uri, '/api/') !== 0) {

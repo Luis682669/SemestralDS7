@@ -95,8 +95,12 @@ class UsuarioController {
             }
 
             // 4. Intentar guardar
-            if ($this->usuarioModel->createUser($username, $password, $rol_id)) {
-                FlashMessage::set('success', '¡Usuario agregado exitosamente!');
+            $result = $this->usuarioModel->createUser($username, $password, $rol_id);
+            if ($result) {
+                $message = '¡Usuario agregado exitosamente! <strong>Guarde estas claves de API en un lugar seguro, no se mostrarán de nuevo:</strong><br>'
+                         . 'Clave Pública: <code>' . htmlspecialchars($result['api_key_public']) . '</code><br>'
+                         . 'Clave Privada: <code>' . htmlspecialchars($result['api_key_private_plain']) . '</code>';
+                FlashMessage::set('success', $message);
             } else {
                 FlashMessage::set('error', 'Error: El nombre de usuario ya está registrado. Por favor, elige otro.');
             }

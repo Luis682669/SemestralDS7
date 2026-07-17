@@ -125,40 +125,44 @@ class Usuario {
     /**
      * Registra un nuevo usuario encriptando su contraseña (CRUD - Create)
      */
-    public function createUser(string $username, string $password, int $rol_id): bool {
+    public function createUser(string $username, string $password, int $rol_id): array|false {
         // 1. Verificar que el usuario no exista previamente
         $stmtCheck = $this->db->prepare("SELECT id FROM usuarios WHERE username = :username LIMIT 1");
         $stmtCheck->execute(['username' => $username]);
         if ($stmtCheck->fetch()) {
-            return false; // El usuario ya existe
+            return false;
         }
 
         // 2. Encriptar la contraseña (Regla de Seguridad OWASP)
         $hash = Auth::hashPassword($password);
 
-        // 3. Insertar en la base de datos
-        $payload = [
-            'username' => $username,
-            'password' => $hash,
-            'rol_id' => $rol_id,
-            'activo' => 1
-        ];
-        $signature = Integrity::signRecord($payload);
+        // 3. Generar claves de API únicas para el nuevo usuario
+        $api_key_public = 'pub_' . bin2hex(random_bytes(16));
+        $api_key_private_plain = 'priv_' . bin2hex(random_bytes(24));
+        $api_key_private_hash = Auth::hashPassword($api_key_private_plain);
 
+        // 4. Insertar en la base de datos
         $stmt = $this->db->prepare(
-            "INSERT INTO usuarios (username, password, rol_id) 
-             VALUES (:username, :password, :rol_id)"
+            "INSERT INTO usuarios (username, password, rol_id, api_key_public, api_key_private_hash) 
+             VALUES (:username, :password, :rol_id, :api_key_public, :api_key_private_hash)"
         );
 
         if ($stmt->execute([
             'username' => $username,
             'password' => $hash,
-            'rol_id' => $rol_id
+            'rol_id' => $rol_id,
+            'api_key_public' => $api_key_public,
+            'api_key_private_hash' => $api_key_private_hash
         ])) {
             $id = (int)$this->db->lastInsertId();
             Integrity::refreshRowSignature($this->db, 'usuarios', 'id', $id);
-            // En una aplicación real, aquí devolveríamos la clave privada para mostrarla al usuario UNA SOLA VEZ.
-            return true;
+            
+            // Devolvemos las claves para que se puedan mostrar al usuario UNA SOLA VEZ.
+            return [
+                'success' => true,
+                'api_key_public' => $api_key_public,
+                'api_key_private_plain' => $api_key_private_plain
+            ];
         }
 
         return false;

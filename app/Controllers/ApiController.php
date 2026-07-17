@@ -1,38 +1,60 @@
 <?php
 namespace App\Controllers;
 
+use App\Models\Colaborador;
 use App\Models\Usuario;
 use App\Core\Response;
-use App\Models\Colaborador;
 use App\Core\Auth;
 
 class ApiController {
     private Colaborador $colaboradorModel;
+    private Usuario $usuarioModel;
 
-    public function __construct(Colaborador $colaboradorModel) {
+    public function __construct(Colaborador $colaboradorModel, Usuario $usuarioModel) {
         $this->colaboradorModel = $colaboradorModel;
+        $this->usuarioModel = $usuarioModel;
     }
 
     private function deny(string $message = 'Acceso no autorizado'): void {
         Response::error($message, 403);
     }
 
+    private function getPublicKeyFromHeader(): ?string {
+        // Primero, intenta leer el encabezado estándar 'Authorization: Bearer <token>'
+        if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+            $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
+            if (preg_match('/^Bearer\s+(.*)$/i', $authHeader, $matches)) {
+                return $matches[1];
+            }
+        }
+
+        // Como alternativa, lee el encabezado personalizado 'X-Api-Key'
+        if (isset($_SERVER['HTTP_X_API_KEY'])) {
+            return $_SERVER['HTTP_X_API_KEY'];
+        }
+
+        return null;
+    }
+
     public function colaboradoresPorSexo(): void {
         // 1. Obtener las claves de las cabeceras de la solicitud
-        $publicKey = $_SERVER['HTTP_X_API_KEY'] ?? null;
+        $publicKey = $this->getPublicKeyFromHeader();
         $privateKey = $_SERVER['HTTP_X_API_SECRET'] ?? null;
 
         if (!$publicKey || !$privateKey) {
-            $this->deny('Autenticación fallida: Faltan claves de API.');
+            $this->deny('Autenticación fallida: Faltan claves de API. Se requiere "Authorization: Bearer <clave_publica>" y "X-Api-Secret: <clave_privada>".');
         }
 
         // 2. Buscar al usuario por su clave pública
-        $userModel = new Usuario($this->colaboradorModel->db); // Asumiendo que el modelo tiene una propiedad pública `db`
-        $user = $userModel->findByPublicKey($publicKey);
+        $user = $this->usuarioModel->findByPublicKey($publicKey);
 
         // 3. Verificar la clave privada y el rol del usuario
-        if (!$user || !Auth::verifyPassword($privateKey, $user['api_key_private_hash'])) {
-            $this->deny('Autenticación fallida: Claves de API inválidas.');
+        if (!$user) {
+            $this->deny('Autenticación fallida: La clave pública proporcionada no fue encontrada o el usuario está inactivo.');
+        }
+
+        if (empty($user['api_key_private_hash']) || !Auth::verifyPassword($privateKey, $user['api_key_private_hash'])) {
+            $this->deny('Autenticación fallida: La clave privada es incorrecta.');
         }
 
         // 4. Aplicar la lógica de negocio: solo Contraloría puede acceder

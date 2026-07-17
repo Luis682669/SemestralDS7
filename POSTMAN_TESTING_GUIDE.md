@@ -25,8 +25,8 @@
 3. Nombre: "Capital Humano - Local"
 4. Agregar variable:
    - Name: baseUrl
-   - Initial Value: http://localhost
-   - Current Value: http://localhost
+   - Initial Value: http://localhost:8000
+   - Current Value: http://localhost:8000
 5. Guardar
 ```
 
@@ -112,14 +112,19 @@ Body:    Dashboard de reportes
 
 **Step A: Hacer login para obtener token CSRF**
 ```
-URL:    {{baseUrl}}/login
-Método: POST
-Headers: 
-  Content-Type: application/x-www-form-urlencoded
-Body:   (form-data)
-  username: admin
-  password: Admin1234!
-  csrf_token: [se captura de la respuesta GET anterior]
+1. Haz una petición GET a {{baseUrl}}/login.
+2. En la respuesta HTML, busca y copia el valor del campo `csrf_token`.
+   <input type="hidden" name="csrf_token" value="a7f3c9e2b1d45678...">
+```
+
+**Paso B: Enviar la petición de login**
+```
+URL:     {{baseUrl}}/login
+Método:  POST
+Body (x-www-form-urlencoded):
+  - username:   admin
+  - password:   Admin1234!
+  - csrf_token: [el token que copiaste en el paso A]
 
 Resultado Esperado:
 Status:  302 (Redirect a /home)
@@ -132,21 +137,8 @@ Cookies: PHPSESSID guardada
 2. Método: POST
 3. URL: {{baseUrl}}/login
 4. Tab "Body":
-   - Seleccionar: x-www-form-urlencoded
-   - username: admin
-   - password: Admin1234!
-   - csrf_token: [ver paso 2.2]
-5. Tab "Cookies": Verificar que se guarda PHPSESSID
-6. Enviar
-```
-
-**¿Cómo obtener el CSRF token?**
-```
-1. Primero, hacer GET a {{baseUrl}}/login
-2. En la respuesta HTML, buscar:
-   <input type="hidden" name="csrf_token" value="a7f3c9e2b1d45678...">
-3. Copiar el valor (64 caracteres hex)
-4. Usarlo en el POST
+   - Seleccionar `x-www-form-urlencoded` y añadir los 3 campos.
+5. Enviar. Postman guardará la cookie `PHPSESSID` automáticamente para usarla en las siguientes peticiones.
 ```
 
 #### Test 2.2: POST - Crear Colaborador (CON CSRF)
@@ -554,3 +546,59 @@ csrf_token={{csrf_token}}
 **Última actualización:** 2026-07-02  
 **Postman versión testada:** 11.0+  
 **Sistema:** Capital Humano
+
+---
+
+## 5️⃣ API - Pruebas de Endpoints Seguros
+
+Esta sección cubre los endpoints bajo la ruta `/api/` que utilizan un sistema de autenticación basado en tokens (API Keys) en lugar de sesiones de usuario.
+
+### 5.1 Preparación del Usuario de API
+
+Antes de probar, necesitas un usuario con el rol y las claves correctas.
+
+1.  **Añadir Columnas (si no existen):** Ejecuta el script `php migrate_add_api_keys.php`.
+2.  **Asignar Claves y Rol:** Ejecuta la siguiente consulta SQL para configurar un usuario (ej. `admin`) para que pueda acceder a la API de Contraloría.
+
+```sql
+UPDATE usuarios
+SET
+  rol_id = 3, -- ID para el rol de "Contraloría"
+  api_key_public = 'clave_publica_contraloria_test',
+  api_key_private_hash = '$2y$10$i2q2Y5k.g2.g.f.e.d.c.b.a.z.y.x.w.v.u.t.s.r.q.p.o.n.m.l.k.j' -- Hash de 'clave_privada_contraloria_123'
+WHERE
+  username = 'admin';
+```
+
+**Importante:** La clave privada real que usarás en Postman es `clave_privada_contraloria_123`. El `api_key_private_hash` es su versión encriptada que se guarda en la base de datos por seguridad.
+
+### 5.2 Test: GET - Obtener datos de Colaboradores por Sexo
+
+Este endpoint está restringido al rol "Contraloría" y soporta dos métodos de autenticación.
+
+#### Método 1: Autenticación Estándar con Bearer Token (Recomendado)
+
+Usa el encabezado `Authorization` con un token "Bearer", que es la práctica más común en APIs modernas.
+
+```
+URL:    {{baseUrl}}/api/colaboradores/sexo
+Método: GET
+Headers:
+  X-Api-Key: clave_publica_contraloria_test
+  X-Api-Secret: clave_privada_contraloria_123
+Body:   (vacío)
+
+Resultado Esperado (Éxito):
+Status:  200 OK
+Body:    JSON con la distribución de colaboradores por sexo.
+
+Resultado Esperado (Fallo):
+Status:  403 Forbidden
+Body:    {"error":"Autenticación fallida..."} o {"error":"Solo Contraloría..."}
+```
+
+**En Postman:**
+1.  Crea un nuevo request "GET - API Sexo Colaboradores".
+2.  URL: `{{baseUrl}}/api/colaboradores/sexo`.
+3.  Ve a la pestaña **Headers** y añade las dos claves: `X-Api-Key` y `X-Api-Secret` con sus respectivos valores de prueba.
+4.  Envía la petición.

@@ -247,27 +247,37 @@
                 </div>
             </div>
 
-            <div id="alert-zone"></div>
+            <div id="alert-zone">
+                <?php if (isset($_GET['msg'])): ?>
+                    <?php if ($_GET['msg'] === 'exito'): ?>
+                        <div class="alert-success">✅ Planilla generada y calculada correctamente.</div>
+                    <?php elseif ($_GET['msg'] === 'error_salario'): ?>
+                        <div class="alert-danger">❌ Error: No se pudo encontrar un salario activo para el colaborador seleccionado. Verifique su historial de cargos.</div>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </div>
 
             <div class="card">
                 <div class="card-header">
                     <h2>Generar Pago Mensual</h2>
                 </div>
-                <form id="demo-form" class="form-grid">
-                    <input type="hidden" name="csrf_token" value="demo">
+                <form action="/planillas/generar" method="POST" class="form-grid">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
 
                     <div class="form-group">
-                        <label>Colaborador</label>
+                        <label for="colaborador_id">Colaborador *</label>
                         <select name="colaborador_id" id="colaborador_id" required>
                             <option value="">-- Seleccione empleado --</option>
-                            <option value="1">8-123-4567 - María Torres</option>
-                            <option value="2">8-234-5678 - Samuel Smith</option>
-                            <option value="3">8-345-6789 - Meredith Silva</option>
+                            <?php foreach ($colaboradores as $colaborador): ?>
+                                <option value="<?php echo htmlspecialchars($colaborador['id']); ?>">
+                                    <?php echo htmlspecialchars($colaborador['identificacion'] . ' - ' . $colaborador['primer_nombre'] . ' ' . $colaborador['primer_apellido']); ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label>Mes</label>
+                        <label>Mes *</label>
                         <select name="mes" required>
                             <option value="Enero">Enero</option>
                             <option value="Febrero">Febrero</option>
@@ -285,11 +295,11 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Año</label>
+                        <label>Año *</label>
                         <input type="number" name="anio" value="2026" required>
                     </div>
 
-                    <button type="submit" class="btn-submit" id="demo-submit">Procesar Pago</button>
+                    <button type="submit" class="btn-submit">Procesar Pago</button>
                 </form>
             </div>
 
@@ -313,91 +323,30 @@
                             </tr>
                         </thead>
                         <tbody id="tbody">
-                            <tr>
-                                <td>00042</td>
-                                <td>María Torres</td>
-                                <td>Mayo 2026</td>
-                                <td class="number-col">$1,200</td>
-                                <td class="number-col" style="color: #e04f5f;">$91</td>
-                                <td class="number-col" style="color: #e04f5f;">$15</td>
-                                <td class="number-col" style="color: #1a73e8;">$100</td>
-                                <td class="number-col" style="font-weight: 700; color: #137333;">$1,194</td>
-                            </tr>
-                            <tr>
-                                <td>00041</td>
-                                <td>Samuel Smith</td>
-                                <td>Mayo 2026</td>
-                                <td class="number-col">$1,450</td>
-                                <td class="number-col" style="color: #e04f5f;">$110</td>
-                                <td class="number-col" style="color: #e04f5f;">$18</td>
-                                <td class="number-col" style="color: #1a73e8;">$121</td>
-                                <td class="number-col" style="font-weight: 700; color: #137333;">$1,443</td>
-                            </tr>
-                            <tr>
-                                <td>00040</td>
-                                <td>Meredith Silva</td>
-                                <td>Abril 2026</td>
-                                <td class="number-col">$1,050</td>
-                                <td class="number-col" style="color: #e04f5f;">$80</td>
-                                <td class="number-col" style="color: #e04f5f;">$13</td>
-                                <td class="number-col" style="color: #1a73e8;">$87</td>
-                                <td class="number-col" style="font-weight: 700; color: #137333;">$1,044</td>
-                            </tr>
+                            <?php if (empty($planillas)): ?>
+                                <tr class="empty-row">
+                                    <td colspan="8">Aún no se han procesado planillas.</td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($planillas as $p): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars(str_pad($p['id'], 5, '0', STR_PAD_LEFT)); ?></td>
+                                        <td><?php echo htmlspecialchars($p['primer_nombre'] . ' ' . $p['primer_apellido']); ?></td>
+                                        <td><?php echo htmlspecialchars($p['mes'] . ' ' . $p['anio']); ?></td>
+                                        <td class="number-col">$<?php echo htmlspecialchars(number_format($p['salario_base'], 0, ',', '.')); ?></td>
+                                        <td class="number-col" style="color: #e04f5f;">$<?php echo htmlspecialchars(number_format($p['css_sipe'], 0, ',', '.')); ?></td>
+                                        <td class="number-col" style="color: #e04f5f;">$<?php echo htmlspecialchars(number_format($p['seguro_educativo'], 0, ',', '.')); ?></td>
+                                        <td class="number-col" style="color: #1a73e8;">$<?php echo htmlspecialchars(number_format($p['xiii_mes'], 0, ',', '.')); ?></td>
+                                        <td class="number-col" style="font-weight: 700; color: #137333;">$<?php echo htmlspecialchars(number_format($p['salario_neto'], 0, ',', '.')); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
             </div>
         </main>
     </div>
-
-    <script>
-        var datosColaboradores = {
-            '1': { nombre: 'María Torres', salario: 1200 },
-            '2': { nombre: 'Samuel Smith', salario: 1450 },
-            '3': { nombre: 'Meredith Silva', salario: 1050 }
-        };
-
-        document.getElementById('demo-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            var select = document.getElementById('colaborador_id');
-            var alertZone = document.getElementById('alert-zone');
-            var btn = document.getElementById('demo-submit');
-
-            if (!select.value) {
-                alertZone.innerHTML = '<div class="alert-danger">❌ Error: Debes seleccionar un colaborador antes de procesar el pago.</div>';
-                return;
-            }
-
-            btn.classList.add('loading');
-            alertZone.innerHTML = '';
-
-            setTimeout(function () {
-                btn.classList.remove('loading');
-                var datos = datosColaboradores[select.value];
-                var salario = datos.salario;
-                var css = Math.round(salario * 0.0975);
-                var seg = Math.round(salario * 0.0125);
-                var xiii = Math.round(salario / 12);
-                var neto = salario - css - seg;
-
-                alertZone.innerHTML = '<div class="alert-success">✅ Planilla generada y calculada correctamente.</div>';
-
-                var tbody = document.getElementById('tbody');
-                var tr = document.createElement('tr');
-                tr.className = 'new-row show-badge flash';
-                tr.innerHTML =
-                    '<td>00043</td>' +
-                    '<td>' + datos.nombre + '</td>' +
-                    '<td>Junio 2026</td>' +
-                    '<td class="number-col">$' + salario.toLocaleString() + '</td>' +
-                    '<td class="number-col" style="color:#e04f5f;">$' + css + '</td>' +
-                    '<td class="number-col" style="color:#e04f5f;">$' + seg + '</td>' +
-                    '<td class="number-col" style="color:#1a73e8;">$' + xiii + '</td>' +
-                    '<td class="number-col" style="font-weight:700; color:#137333;">$' + neto.toLocaleString() + '</td>';
-                tbody.insertBefore(tr, tbody.firstChild);
-            }, 900);
-        });
-    </script>
 
 </body>
 </html>
