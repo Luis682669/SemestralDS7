@@ -657,10 +657,10 @@
 
         <div class="sidebar-foot">
             <div class="sidebar-user">
-                <div class="sidebar-avatar">A</div>
+                <div class="sidebar-avatar"><?php echo strtoupper(substr($username, 0, 1)); ?></div>
                 <div class="who">
-                    <b>admin</b>
-                    <span>Administrador</span>
+                    <b><?php echo htmlspecialchars($username); ?></b>
+                    <span><?php echo htmlspecialchars($rol_nombre); ?></span>
                 </div>
             </div>
             <a href="/logout" class="btn-logout">
@@ -677,7 +677,7 @@
             <!-- Greeting header -->
             <div class="greet-header">
                 <p class="greet-eyebrow">Panel de Control</p>
-                <h1>Buenos días, admin</h1>
+                <h1>Buenos días, <?php echo htmlspecialchars($username); ?></h1>
                 <div class="search-bar">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
                     <input type="text" placeholder="¿En qué podemos ayudarte hoy?">

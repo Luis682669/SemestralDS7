@@ -75,13 +75,29 @@ class Usuario {
     }
 
     public function blockUserUntil(string $username, string $datetime): void {
+        $stmtFind = $this->db->prepare("SELECT id FROM usuarios WHERE username = :username LIMIT 1");
+        $stmtFind->execute(['username' => $username]);
+        $user = $stmtFind->fetch();
+
+        if (!$user) return;
+
         $stmt = $this->db->prepare("UPDATE usuarios SET bloqueado_hasta = :datetime WHERE username = :username");
-        $stmt->execute(['datetime' => $datetime, 'username' => $username]);
+        if ($stmt->execute(['datetime' => $datetime, 'username' => $username])) {
+            Integrity::refreshRowSignature($this->db, 'usuarios', 'id', $user['id']);
+        }
     }
 
     public function clearBlock(string $username): void {
+        $stmtFind = $this->db->prepare("SELECT id FROM usuarios WHERE username = :username LIMIT 1");
+        $stmtFind->execute(['username' => $username]);
+        $user = $stmtFind->fetch();
+
+        if (!$user) return;
+
         $stmt = $this->db->prepare("UPDATE usuarios SET bloqueado_hasta = NULL WHERE username = :username");
-        $stmt->execute(['username' => $username]);
+        if ($stmt->execute(['username' => $username])) {
+            Integrity::refreshRowSignature($this->db, 'usuarios', 'id', $user['id']);
+        }
     }
 
     public function isBlocked(array $user): bool {

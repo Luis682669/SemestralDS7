@@ -31,6 +31,11 @@ class ReporteController {
         $id = $_GET['id'] ?? 0;
         $colab = $this->reporteModel->getCollaboratorById((int)$id);
 
+        if (!$colab) {
+            http_response_code(404);
+            die('Error: Colaborador no encontrado.');
+        }
+
         $pdf = new \FPDF();
         $pdf->AddPage();
         $pdf->SetFont('Arial', 'B', 16);
@@ -43,7 +48,9 @@ class ReporteController {
         $pdf->Cell(0, 10, 'Departamento: ' . $this->encodeText($colab['departamento']), 0, 1);
         $pdf->Cell(0, 10, 'Estado: ' . $this->encodeText($colab['estatus'] ?? 'Activo'), 0, 1);
         
+        $this->ensureNoOutputBeforePDF();
         $pdf->Output('I', 'Ficha_' . $colab['identificacion'] . '.pdf');
+        exit;
     }
     public function generarListadoColaboradores() {
         // Obtenemos todos los colaboradores
@@ -85,6 +92,7 @@ class ReporteController {
         // Generar y mostrar el PDF en el navegador
         $this->ensureNoOutputBeforePDF();
         $pdf->Output('I', 'Listado_Colaboradores.pdf');
+        exit;
     }
 
     public function generarReporteVacaciones() {
@@ -128,6 +136,7 @@ class ReporteController {
 
         $this->ensureNoOutputBeforePDF();
         $pdf->Output('I', 'Reporte_Vacaciones.pdf');
+        exit;
     }
 
     private function ensureNoOutputBeforePDF(): void {

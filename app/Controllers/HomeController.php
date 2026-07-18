@@ -32,6 +32,18 @@ class HomeController {
         // Obtenemos las últimas 5 solicitudes de vacaciones para la tabla de actividad reciente
         $actividadReciente = array_slice($this->vacacionModel->getAll(), 0, 5);
 
+        // Pasamos el nombre de usuario a la vista para asegurar que se muestre el correcto
+        $username = $_SESSION['username'] ?? 'Usuario';
+        $rol_id = $_SESSION['rol_id'] ?? 0;
+
+        // Mapeamos el ID del rol a un nombre legible para la vista
+        $roles_map = [
+            1 => 'Administrador',
+            2 => 'Recursos Humanos',
+            3 => 'Contraloría'
+        ];
+        $rol_nombre = $roles_map[$rol_id] ?? 'Rol Desconocido';
+
         require_once BASE_PATH . '/app/Views/modules/home.php';
     }
 }

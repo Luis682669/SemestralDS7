@@ -69,7 +69,7 @@
         <main class="main-container">
             <div class="page-title">
                 <p class="eyebrow">Dashboard</p>
-                <h1>Bienvenido, <?php echo htmlspecialchars($_SESSION['username'] ?? 'Administrador'); ?></h1>
+                <h1>Bienvenido, <?php echo htmlspecialchars($username); ?></h1>
             </div>
 
             <!-- Tarjetas de Estadísticas -->
