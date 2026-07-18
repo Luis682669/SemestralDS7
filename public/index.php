@@ -60,9 +60,9 @@ $vacacionModel = new \App\Models\Vacacion($db);
 $vacacionController = new \App\Controllers\VacacionController($vacacionModel, $colaboradorModel);
 $reporteModel = new \App\Models\Reporte($db);
 $reporteController = new \App\Controllers\ReporteController($reporteModel);
-$homeController = new \App\Controllers\HomeController($reporteModel, $vacacionModel);
 $planillaModel = new \App\Models\Planilla($db);
 $planillaController = new \App\Controllers\PlanillaController($planillaModel, $colaboradorModel);
+$homeController = new \App\Controllers\HomeController($reporteModel, $vacacionModel, $usuarioModel, $planillaModel);
 $apiController = new \App\Controllers\ApiController($colaboradorModel, $usuarioModel);
 
 // 6. Control de Acceso

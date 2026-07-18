@@ -537,7 +537,7 @@
                         <h3 class="report-title">Listado de Colaboradores</h3>
                         <p class="report-desc">Genera un PDF con la lista completa de empleados, cédulas y departamentos activos.</p>
                     </div>
-                    <button type="button" class="btn-primary" data-report="Listado de Colaboradores">Generar PDF</button>
+                    <a href="/reportes/listado" target="_blank" class="btn-primary">Generar PDF</a>
                 </div>
 
                 <div class="report-card">
@@ -546,7 +546,7 @@
                         <h3 class="report-title">Estado de Vacaciones</h3>
                         <p class="report-desc">Genera un PDF con todas las solicitudes y su estado actual, incluidos los permisos de vacaciones.</p>
                     </div>
-                    <button type="button" class="btn-primary" data-report="Estado de Vacaciones">Generar PDF</button>
+                    <a href="/reportes/vacaciones" target="_blank" class="btn-primary">Generar PDF</a>
                 </div>
 
                 <div class="report-card">
@@ -564,19 +564,25 @@
                     <div class="stat-card">
                         <h4>Colaboradores por Sexo</h4>
                         <ul>
-                            <li><strong>Femenino:</strong> <span class="stat-bar-wrap"><span class="stat-bar" data-value="68"></span></span> 68</li>
-                            <li><strong>Masculino:</strong> <span class="stat-bar-wrap"><span class="stat-bar" data-value="54"></span></span> 54</li>
-                            <li><strong>No especificado:</strong> <span class="stat-bar-wrap"><span class="stat-bar" data-value="2"></span></span> 2</li>
+                            <?php foreach ($statsBySexo as $label => $value): ?>
+                                <li>
+                                    <strong><?php echo htmlspecialchars($label); ?>:</strong> 
+                                    <span class="stat-bar-wrap"><span class="stat-bar" data-value="<?php echo $value; ?>"></span></span> 
+                                    <?php echo $value; ?>
+                                </li>
+                            <?php endforeach; ?>
                         </ul>
                     </div>
                     <div class="stat-card">
                         <h4>Colaboradores por Rango de Edad</h4>
                         <ul>
-                            <li><strong>18-24:</strong> <span class="stat-bar-wrap"><span class="stat-bar" data-value="14"></span></span> 14</li>
-                            <li><strong>25-30:</strong> <span class="stat-bar-wrap"><span class="stat-bar" data-value="38"></span></span> 38</li>
-                            <li><strong>31-40:</strong> <span class="stat-bar-wrap"><span class="stat-bar" data-value="46"></span></span> 46</li>
-                            <li><strong>41-50:</strong> <span class="stat-bar-wrap"><span class="stat-bar" data-value="20"></span></span> 20</li>
-                            <li><strong>51+ :</strong> <span class="stat-bar-wrap"><span class="stat-bar" data-value="6"></span></span> 6</li>
+                            <?php foreach ($statsByAge as $label => $value): ?>
+                                <li>
+                                    <strong><?php echo htmlspecialchars($label); ?>:</strong> 
+                                    <span class="stat-bar-wrap"><span class="stat-bar" data-value="<?php echo $value; ?>"></span></span> 
+                                    <?php echo $value; ?>
+                                </li>
+                            <?php endforeach; ?>
                         </ul>
                     </div>
                 </div>
@@ -585,7 +591,7 @@
             <section class="table-section">
                 <div class="table-header">
                     <h2>Colaboradores Activos</h2>
-                    <p>Mostrando página 1 de 12.</p>
+                    <p>Mostrando página <?php echo $page; ?> de <?php echo $totalPages; ?>.</p>
                 </div>
                 <div class="table-wrap">
                     <table>
@@ -600,55 +606,36 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>8-123-4567</td>
-                                <td>María Torres</td>
-                                <td>Femenino</td>
-                                <td>29</td>
-                                <td>Recursos Humanos</td>
-                                <td>Activo</td>
-                            </tr>
-                            <tr>
-                                <td>8-234-5678</td>
-                                <td>Samuel Smith</td>
-                                <td>Masculino</td>
-                                <td>34</td>
-                                <td>Tecnología</td>
-                                <td>Activo</td>
-                            </tr>
-                            <tr>
-                                <td>8-345-6789</td>
-                                <td>Meredith Silva</td>
-                                <td>Femenino</td>
-                                <td>27</td>
-                                <td>Finanzas</td>
-                                <td>Activo</td>
-                            </tr>
-                            <tr>
-                                <td>8-456-7890</td>
-                                <td>Jorge Pérez</td>
-                                <td>Masculino</td>
-                                <td>41</td>
-                                <td>Operaciones</td>
-                                <td>Activo</td>
-                            </tr>
-                            <tr>
-                                <td>8-567-8901</td>
-                                <td>Luisa García</td>
-                                <td>Femenino</td>
-                                <td>25</td>
-                                <td>Tecnología</td>
-                                <td>Activo</td>
-                            </tr>
+                            <?php if (!empty($colaboradores)): ?>
+                                <?php foreach ($colaboradores as $col): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($col['identificacion']); ?></td>
+                                        <td><?php echo htmlspecialchars($col['primer_nombre'] . ' ' . $col['primer_apellido']); ?></td>
+                                        <td><?php echo $col['sexo'] === 'F' ? 'Femenino' : ($col['sexo'] === 'M' ? 'Masculino' : 'No especificado'); ?></td>
+                                        <td><?php 
+                                            try {
+                                                echo (new DateTime($col['fecha_nacimiento']))->diff(new DateTime())->y;
+                                            } catch (Exception $e) {
+                                                echo 'N/A';
+                                            }
+                                        ?></td>
+                                        <td><?php echo htmlspecialchars($col['departamento']); ?></td>
+                                        <td><?php echo htmlspecialchars($col['estatus']); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 20px;">No hay colaboradores para mostrar.</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
 
                 <div class="pagination">
-                    <a href="#" class="page-link active">1</a>
-                    <a href="#" class="page-link">2</a>
-                    <a href="#" class="page-link">3</a>
-                    <a href="#" class="page-link">4</a>
+                    <?php for ($i = 1; $i <= min($totalPages, 4); $i++): ?>
+                        <a href="/reportes?page=<?php echo $i; ?>" class="page-link <?php echo $i == $page ? 'active' : ''; ?>"><?php echo $i; ?></a>
+                    <?php endfor; ?>
                 </div>
             </section>
         </main>
@@ -657,27 +644,13 @@
     <script>
         // Barras de estadísticas animadas al cargar
         setTimeout(function () {
+            var maxStatValue = <?php echo $maxStatValue; ?>;
             document.querySelectorAll('.stat-bar').forEach(function (bar) {
                 var val = parseInt(bar.getAttribute('data-value'), 10);
-                var max = 70;
-                bar.style.width = Math.min((val / max) * 100, 100) + '%';
+                bar.style.width = Math.min((val / maxStatValue) * 100, 100) + '%';
             });
         }, 500);
 
-        // Simulación de generación de PDF
-        document.querySelectorAll('.btn-primary[data-report]').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                var nombre = btn.getAttribute('data-report');
-                btn.classList.add('loading');
-                setTimeout(function () {
-                    btn.classList.remove('loading');
-                    var toast = document.getElementById('toast');
-                    toast.lastChild.textContent = ' ' + nombre + ' generado correctamente';
-                    toast.classList.add('show');
-                    setTimeout(function () { toast.classList.remove('show'); }, 2600);
-                }, 900);
-            });
-        });
     </script>
 
 </body>

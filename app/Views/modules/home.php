@@ -460,6 +460,11 @@
         .total-line b { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); }
         .total-line span { font-size: .76rem; color: var(--green); font-weight: 600; }
 
+        /* Colores para la comparación del gráfico */
+        .total-line span.positive { color: var(--green); }
+        .total-line span.negative { color: var(--danger); }
+        .total-line span.neutral { color: var(--muted); }
+
         /* calendar */
         .cal-month {
             display: flex; align-items: center; justify-content: space-between;
@@ -769,7 +774,7 @@
                 <div class="module-card blue">
                     <div class="module-icon icon-blue">🔐</div>
                     <h3 class="module-title">Usuarios Administrativos</h3>
-                    <div class="module-stat"><b class="count-up" data-target="8">0</b><span>cuentas activas</span></div>
+                    <div class="module-stat"><b class="count-up" data-target="<?php echo $totalUsuarios ?? 8; ?>">0</b><span>cuentas activas</span></div>
                     <p class="module-desc">Gestión de accesos, asignación de roles de seguridad (Admin, RRHH) y suspensiones de cuenta.</p>
                     <a href="/usuarios" class="module-btn">
                         Administrar
@@ -780,7 +785,7 @@
                 <div class="module-card teal">
                     <div class="module-icon icon-teal">👤</div>
                     <h3 class="module-title">Colaboradores</h3>
-                    <div class="module-stat"><b class="count-up" data-target="124">0</b><span>en plantilla</span></div>
+                    <div class="module-stat"><b class="count-up" data-target="<?php echo $totalColaboradores ?? 124; ?>">0</b><span>en plantilla</span></div>
                     <p class="module-desc">Alta de personal, expedientes académicos en PDF, asignación de departamentos y contratos.</p>
                     <a href="/colaboradores" class="module-btn">
                         Ver personal
@@ -791,7 +796,7 @@
                 <div class="module-card purple">
                     <div class="module-icon icon-purple">🏖️</div>
                     <h3 class="module-title">Vacaciones y Permisos</h3>
-                    <div class="module-stat"><b class="count-up" data-target="14">0</b><span>activas ahora</span></div>
+                    <div class="module-stat"><b class="count-up" data-target="<?php echo $totalVacacionesActivas ?? 14; ?>">0</b><span>activas ahora</span></div>
                     <p class="module-desc">Cálculo automatizado de días acumulados, registro de ausencias y generación de resueltos oficiales.</p>
                     <a href="/vacaciones" class="module-btn">
                         Gestionar
@@ -802,7 +807,7 @@
                 <div class="module-card blue">
                     <div class="module-icon icon-blue">💼</div>
                     <h3 class="module-title">Planillas</h3>
-                    <div class="module-stat"><b>0</b><span>pagos recientes</span></div>
+                    <div class="module-stat"><b><?php echo $totalPlanillasRecientes ?? 0; ?></b><span>pagos recientes</span></div>
                     <p class="module-desc">Genera la planilla mensual, calcula deducciones y visualiza el historial de pagos procesados.</p>
                     <a href="/planillas" class="module-btn">
                         Ir a Planilla
@@ -818,32 +823,51 @@
                         <h2>Reportes generados</h2>
                         <a href="/reportes">Ver detalle</a>
                     </div>
-                    <div class="total-line"><b>6</b><span>↓ 2 vs. mes anterior</span></div>
+                    <div class="total-line">
+                        <b><?php echo $reportesChartData['total_current_month']; ?></b>
+                        <span class="<?php echo $reportesChartData['comparison_class']; ?>"><?php echo $reportesChartData['comparison_text']; ?></span>
+                    </div>
                     <div class="chart-wrap">
-                        <div class="bar-col"><div class="bar" style="height:38%"></div><span>Ene</span></div>
-                        <div class="bar-col"><div class="bar" style="height:55%"></div><span>Feb</span></div>
-                        <div class="bar-col"><div class="bar" style="height:70%"></div><span>Mar</span></div>
-                        <div class="bar-col"><div class="bar" style="height:48%"></div><span>Abr</span></div>
-                        <div class="bar-col"><div class="bar" style="height:90%"></div><span>May</span></div>
-                        <div class="bar-col"><div class="bar" style="height:60%"></div><span>Jun</span></div>
+                        <?php foreach ($reportesChartData['labels'] as $index => $label): ?>
+                            <div class="bar-col">
+                                <div class="bar" style="height:<?php echo $reportesChartData['heights'][$index]; ?>%"></div>
+                                <span><?php echo $label; ?></span>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
 
                 <div class="card">
                     <div class="cal-month">
-                        <b>Julio 2026</b>
+                        <b><?php echo htmlspecialchars($nombreMesActual . ' ' . $anioActual); ?></b>
                         <div class="cal-nav">
                             <button aria-label="Mes anterior">‹</button>
                             <button aria-label="Mes siguiente">›</button>
                         </div>
                     </div>
                     <div class="cal-grid">
-                        <span class="dow">Su</span><span class="dow">Mo</span><span class="dow">Tu</span><span class="dow">We</span><span class="dow">Th</span><span class="dow">Fr</span><span class="dow">Sa</span>
-                        <span class="day muted">28</span><span class="day muted">29</span><span class="day muted">30</span><span class="day">1</span><span class="day">2</span><span class="day">3</span><span class="day">4</span>
-                        <span class="day">5</span><span class="day">6</span><span class="day event">7</span><span class="day event">8</span><span class="day event">9</span><span class="day event">10</span><span class="day">11</span>
-                        <span class="day">12</span><span class="day event">13</span><span class="day event">14</span><span class="day">15</span><span class="day">16</span><span class="day">17</span><span class="day">18</span>
-                        <span class="day">19</span><span class="day">20</span><span class="day">21</span><span class="day today">22</span><span class="day">23</span><span class="day">24</span><span class="day">25</span>
-                        <span class="day">26</span><span class="day">27</span><span class="day">28</span><span class="day">29</span><span class="day">30</span><span class="day">31</span><span class="day muted">1</span>
+                        <span class="dow">Do</span><span class="dow">Lu</span><span class="dow">Ma</span><span class="dow">Mi</span><span class="dow">Ju</span><span class="dow">Vi</span><span class="dow">Sá</span>
+                        <?php
+                            $primerDiaDelMes = (int)(new \DateTime("$anioActual-$mesActual-01"))->format('w'); // 0 (Dom) a 6 (Sáb)
+                            $diaDeHoy = (int)$hoy->format('j');
+
+                            // Celdas vacías para los días del mes anterior
+                            for ($i = 0; $i < $primerDiaDelMes; $i++) {
+                                echo '<span class="day muted"></span>';
+                            }
+
+                            // Días del mes actual
+                            for ($dia = 1; $dia <= $diasEnMes; $dia++) {
+                                $classes = 'day';
+                                if ($dia == $diaDeHoy && $mesActual == (int)$hoy->format('n') && $anioActual == (int)$hoy->format('Y')) {
+                                    $classes .= ' today';
+                                }
+                                if (in_array($dia, $diasVacaciones, true)) {
+                                    $classes .= ' event';
+                                }
+                                echo "<span class=\"{$classes}\">{$dia}</span>";
+                            }
+                        ?>
                     </div>
                 </div>
             </div>

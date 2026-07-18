@@ -13,7 +13,7 @@ class ReporteController {
     }
     public function index() {
         $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
-        $pageSize = 8;
+        $pageSize = 5; // Coincide con el diseño de la tabla en la vista
 
         $total = $this->reporteModel->countActiveCollaborators();
         $totalPages = max(1, (int)ceil($total / $pageSize));
@@ -21,8 +21,36 @@ class ReporteController {
         $offset = ($page - 1) * $pageSize;
 
         $colaboradores = $this->reporteModel->getActiveCollaboratorsPage($offset, $pageSize);
-        $colaboradoresBySexo = $this->reporteModel->getCollaboratorGenderCounts();
-        $colaboradoresByAge = $this->reporteModel->getCollaboratorAgeRanges();
+
+        // --- Procesar datos para las estadísticas ---
+        $statsBySexoRaw = $this->reporteModel->getCollaboratorGenderCounts();
+        $statsBySexo = [
+            'Femenino' => 0,
+            'Masculino' => 0,
+            'No especificado' => 0,
+        ];
+        foreach ($statsBySexoRaw as $row) {
+            if ($row['sexo'] === 'F') {
+                $statsBySexo['Femenino'] = (int)$row['total'];
+            } elseif ($row['sexo'] === 'M') {
+                $statsBySexo['Masculino'] = (int)$row['total'];
+            } else {
+                $statsBySexo['No especificado'] += (int)$row['total'];
+            }
+        }
+
+        $statsByAgeRaw = $this->reporteModel->getCollaboratorAgeRanges();
+        $statsByAge = [
+            '18-24' => $statsByAgeRaw['age_18_24'] ?? 0,
+            '25-30' => $statsByAgeRaw['age_25_30'] ?? 0,
+            '31-40' => $statsByAgeRaw['age_31_40'] ?? 0,
+            '41-50' => $statsByAgeRaw['age_41_50'] ?? 0,
+            '51+'   => $statsByAgeRaw['age_51_plus'] ?? 0,
+        ];
+
+        // Calcular el valor máximo para las barras de progreso
+        $allStatValues = array_merge(array_values($statsBySexo), array_values($statsByAge));
+        $maxStatValue = !empty($allStatValues) ? max($allStatValues) : 1;
 
         require_once BASE_PATH . '/app/Views/modules/reportes/index.php';
     }
