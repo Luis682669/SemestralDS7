@@ -7,7 +7,8 @@
  */
 
 namespace App\Core;
-
+// Implementamos una interfaz para cumplir con el Criterio 20 que sirve para manejar 
+// errores de manera uniforme en toda la aplicación
 interface IError {
     public function logError(string $message, string $file, int $line): void;
     public function displayError(): string;

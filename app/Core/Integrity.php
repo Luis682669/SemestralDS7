@@ -1,7 +1,9 @@
 <?php
 namespace App\Core;
 
-class Integrity {
+class Integrity {  
+//clase que se encarga de la integridad de los datos en la base de datos, 
+// asegurando que los registros no sean modificados sin autorización
     private const DEFAULT_SECRET = 'capitalhumano_integrity_secret_2026';
     private static ?string $secretKey = null;
     private static array $tableColumnsCache = [];

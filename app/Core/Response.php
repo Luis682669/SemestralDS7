@@ -1,7 +1,8 @@
 <?php
 namespace App\Core;
 
-class Response {
+class Response { 
+    // sirve para enviar respuestas HTTP en formato JSON, incluyendo manejo de errores y códigos de estado
     public static function json(array|object $data, int $status = 200): void {
         if (!headers_sent()) {
             header('Content-Type: application/json; charset=utf-8');
