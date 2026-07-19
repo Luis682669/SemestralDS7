@@ -38,6 +38,9 @@ require_once BASE_PATH . '/app/Models/Reporte.php';
 require_once BASE_PATH . '/app/Controllers/ApiController.php';
 require_once BASE_PATH . '/app/Models/Planilla.php';
 require_once BASE_PATH . '/app/Controllers/PlanillaController.php';
+// 3. Cargar el autoloader de Composer
+// Esta única línea reemplaza todos los require_once manuales.
+require_once BASE_PATH . '/vendor/autoload.php';
 
 
 

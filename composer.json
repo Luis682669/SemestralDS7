@@ -1,5 +1,19 @@
 {
+    "name": "utp/capital-humano",
+    "description": "Proyecto Semestral de Gestión de Capital Humano.",
+    "type": "project",
     "require": {
-        "phpoffice/phpspreadsheet": "^5.8"
+        "phpoffice/phpspreadsheet": "^1.20"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        },
+        "files": [
+            "app/Core/fpdf.php"
+        ]
+    },
+    "config": {
+        "platform": { "php": "8.3" }
     }
 }

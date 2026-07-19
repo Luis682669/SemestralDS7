@@ -1,0 +1,3 @@
+[2026-07-19 03:37:31] ERROR BDD: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: YES) en C:\Users\Luis\SemestralDS7\app\Core\Database.php (Línea 33)
+[2026-07-19 03:37:31] ERROR BDD: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: YES) en C:\Users\Luis\SemestralDS7\app\Core\Database.php (Línea 33)
+[2026-07-19 03:38:03] ERROR BDD: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: YES) en C:\Users\Luis\SemestralDS7\app\Core\Database.php (Línea 33)

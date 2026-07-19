@@ -5,7 +5,7 @@ require_once __DIR__ . '/app/Core/Database.php';
 use App\Core\Database;
 
 $db = Database::getInstance();
-
+// Verificar la integridad de la tabla cargos_historial
 $tables = ['cargos_historial', 'colaboradores', 'vacaciones', 'planillas', 'usuarios'];
 foreach ($tables as $table) {
     echo "\n--- $table schema ---\n";
