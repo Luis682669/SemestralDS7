@@ -44,9 +44,12 @@
             display: flex;
             flex-direction: column;
             padding: 22px 14px;
-            position: sticky;
+            position: fixed; /* Cambiado a 'fixed' para que no se desplace */
             top: 0;
+            left: 0;
+            bottom: 0;
             height: 100vh;
+            overflow-y: auto; /* Permite scroll interno si hay muchos ítems */
         }
 
         .sidebar-brand {
@@ -145,7 +148,7 @@
         .btn-logout:hover { background: var(--danger); color: #fff; }
 
         /* ── MAIN ── */
-        .main-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+        .main-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; margin-left: 232px; }
 
         .main-container {
             flex: 1;
@@ -399,7 +402,8 @@
         }
 
         @media (max-width: 760px) {
-            .sidebar { display: none; }
+            .sidebar { display: none; } /* Ocultamos la barra en móvil */
+            .main-wrap { margin-left: 0; } /* Y quitamos el margen del contenido principal */
             .main-container { padding: 24px 18px 44px; }
             .header-actions { flex-direction: column; align-items: stretch; }
             .search-form { max-width: none; }
