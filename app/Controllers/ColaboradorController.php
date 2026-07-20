@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use App\Models\Colaborador;
 use App\Core\Security;
+use App\Core\FlashMessage;
 
 class ColaboradorController {
     private Colaborador $colaboradorModel;
@@ -88,13 +89,17 @@ class ColaboradorController {
             ];
 
             $colaboradorId = $this->colaboradorModel->create($data, $pdfPath, $photoPath);
-            if ($colaboradorId) {
+            
+            if ($colaboradorId !== false) {
                 $this->colaboradorModel->addCargo($colaboradorId, $data['ocupacion'], $sueldo, $data['fecha_contratacion']);
+                FlashMessage::set('success', 'Colaborador registrado exitosamente.');
                 header('Location: /colaboradores');
             } else {
-                // Redirigir con un mensaje de error en lugar de un alert
-                header('Location: /colaboradores/crear?error=guardado');
+                // La cédula ya existe, mostramos un error específico.
+                FlashMessage::set('error', 'Error: La cédula "' . htmlspecialchars($data['identificacion']) . '" ya está registrada en el sistema.');
+                header('Location: /colaboradores/crear');
             }
+            exit;
         }
     }
 

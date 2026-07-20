@@ -18,7 +18,7 @@ class Security {
      */
     public static function validateCSRFToken(string $token): void {
         if (empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $token)) {
-            die('Error de seguridad: Token CSRF inválido. Posible ataque zdetectado.');
+            die('Error de seguridad: Token CSRF inválido. Posible ataque detectado.');
         }
     }
 

@@ -34,7 +34,15 @@ class Colaborador {
     /**
      * Registra un nuevo colaborador con su historial (Punto 4, 6)
      */
-    public function create(array $data, string $pdfPath, string $photoPath): int {
+    public function create(array $data, string $pdfPath, string $photoPath): int|false {
+        // Verificar si la identificación ya existe para prevenir duplicados
+        $stmtCheck = $this->db->prepare("SELECT id FROM colaboradores WHERE identificacion = ?");
+        $stmtCheck->execute([$data['identificacion']]);
+        if ($stmtCheck->fetch()) {
+            // Retorna false si la identificación ya está registrada
+            return false;
+        }
+
         $payload = [
             'identificacion' => $data['identificacion'],
             'primer_nombre' => $data['primer_nombre'],
@@ -75,7 +83,7 @@ class Colaborador {
             return $id;
         }
 
-        return 0;
+        return false;
     }
     /**
      * Busca colaboradores por cédula, nombre o apellido (Puntos 7 y 8)
